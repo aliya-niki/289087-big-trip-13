@@ -25,9 +25,8 @@ render(tripInfoElement, createTripCostTemplate(), `beforeend`);// Стоимос
 
 render(tripControlsMenuElement, createMenuTemplate(), `afterend`);// Меню
 render(tripControlsFiltersElement, createFiltersTemplate(), `afterend`);// Фильтры
-render(tripEventsElement, createSortTemplate(), `beforeend`);// Сортировка
+render(tripEventsElement, createSortTemplate(), `afterbegin`);// Сортировка
 
-render(tripEventsElement, `<ul class="trip-events__list"></ul>`, `beforeend`);
 const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 render(tripEventsListElement, createEditEventFormTemplate(), `beforeend`);// Форма редактирования
 render(tripEventsListElement, createAddNewEventFormTemplate(), `beforeend`);// Форма создания
