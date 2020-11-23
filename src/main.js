@@ -5,6 +5,7 @@ import {createEditEventFormTemplate} from "./view/edit-event-form.js";// Фор�
 import {createAddNewEventFormTemplate} from "./view/add-new-event-form.js";// Форма создания
 import {createTripCostTemplate} from "./view/trip-cost.js";// Стоимость поездки
 import {createSortTemplate} from "./view/sort.js";// Сортировка
+import {createEventsListTemplate} from "./view/events-list.js";
 import {createTripPointTemplate} from "./view/trip-event.js";// Точка маршрута (в списке)
 
 const EVENTS_COUNT = 3;
@@ -14,8 +15,7 @@ const render = (container, template, place) => {
 };
 
 const tripMainElement = document.querySelector(`.trip-main`);
-const tripControlsMenuElement = tripMainElement.querySelector(`.trip-controls__menu`);
-const tripControlsFiltersElement = tripMainElement.querySelector(`.trip-controls__filters`);
+const tripControlsElements = tripMainElement.querySelectorAll(`.trip-controls h2`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 render(tripMainElement, createTripInfoTemplate(), `afterbegin`);// Информация о маршруте
@@ -23,14 +23,21 @@ render(tripMainElement, createTripInfoTemplate(), `afterbegin`);// Информ�
 const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 render(tripInfoElement, createTripCostTemplate(), `beforeend`);// Стоимость поездки
 
-render(tripControlsMenuElement, createMenuTemplate(), `afterend`);// Меню
-render(tripControlsFiltersElement, createFiltersTemplate(), `afterend`);// Фильтры
+render(tripControlsElements[0], createMenuTemplate(), `afterend`);// Меню
+render(tripControlsElements[1], createFiltersTemplate(), `afterend`);// Фильтры
 render(tripEventsElement, createSortTemplate(), `afterbegin`);// Сортировка
 
+render(tripEventsElement, createEventsListTemplate(), `beforeend`);
 const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 render(tripEventsListElement, createEditEventFormTemplate(), `beforeend`);// Форма редактирования
 render(tripEventsListElement, createAddNewEventFormTemplate(), `beforeend`);// Форма создания
 
-for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(tripEventsListElement, createTripPointTemplate(), `beforeend`);// Точка маршрута (в списке)
-}
+const renderTripEvents = (number) => {
+  for (let i = 0; i < number; i++) {
+    render(tripEventsListElement, createTripPointTemplate(), `beforeend`);
+  }
+};
+
+renderTripEvents(EVENTS_COUNT);// Точка маршрута (в списке)
+
+
