@@ -1,5 +1,5 @@
 import flatpickr from "flatpickr";
-import {DESTINATIONS, EVENT_TYPES} from "../utils.js";
+import {DESTINATIONS, EVENT_TYPES, getRandomInteger} from "../utils.js";
 
 const createEventTypeTemplate = (eventType) => {
   return EVENT_TYPES.map((eventTypeItem) => `<div class="event__type-item">
@@ -8,12 +8,15 @@ const createEventTypeTemplate = (eventType) => {
   </div>`).join(``);
 };
 
-const createOfferTemplate = (availableOffers, checkedOffers) => {
+const createOfferTemplate = (availableOffers) => {
+  let isChecked = () => {
+    return Boolean(getRandomInteger(0, 1));
+  };
   return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
       ${availableOffers.map((offer) => `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}-1" type="checkbox" name="event-offer-${offer.id}" ${checkedOffers.includes(offer) ? `checked` : ``}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}-1" type="checkbox" name="event-offer-${offer.id}" ${isChecked() ? `checked` : ``}>
       <label class="event__offer-label" for="event-offer-${offer.id}-1">
         <span class="event__offer-title">${offer.description}</span>
         &plus;&euro;&nbsp;
@@ -42,7 +45,7 @@ const createDescriptionTemplate = (description, photos) => {
 };
 
 export const createEditEventFormTemplate = (event = {}) => {
-  const {destination, description, photos, eventType, availableOffers, checkedOffers, startTime, finishTime, price} = event;
+  const {destination, description, photos, eventType, availableOffers, startTime, finishTime, price} = event;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -50,7 +53,7 @@ export const createEditEventFormTemplate = (event = {}) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType ? eventType : `flight`}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType ? eventType.toLowerCase() : `flight`}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -97,7 +100,7 @@ export const createEditEventFormTemplate = (event = {}) => {
 
       </header>
       <section class="event__details">
-        ${eventType ? createOfferTemplate(availableOffers, checkedOffers) : ``}
+        ${availableOffers.length ? createOfferTemplate(availableOffers) : ``}
 
         ${destination !== `` ? createDescriptionTemplate(description, photos) : ``}
 

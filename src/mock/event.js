@@ -24,7 +24,7 @@ const generateOffers = () => {
       availableOffers.push({
         id: offersDescriptions[randomIndex].replaceAll(` `, `-`).toLowerCase(),
         description: offersDescriptions[randomIndex],
-        price: getRandomInteger(0, 50)
+        price: getRandomInteger(1, 50)
       });
     }
     offers.set(eventType, availableOffers);
@@ -96,20 +96,12 @@ export const generateEvent = () => {
   let duration = dayjs(finishTime).diff(startTime, `minute`);
   let eventType = generateEventType(EVENT_TYPES);
   let availableOffers = offers.get(eventType);
-  let checkedOffers = [];
-  availableOffers.forEach((offer) => {
-    let isChecked = Boolean(getRandomInteger(0, 1));
-    if (isChecked) {
-      checkedOffers.push(offer);
-    }
-  });
   return {
     destination: generateDestination(DESTINATIONS),
     description: generateDestinationDescription(),
     photos: generateDestinationPhoto(),
     eventType,
     availableOffers,
-    checkedOffers,
     isFavorite: Boolean(getRandomInteger(0, 1)),
     startTime,
     finishTime,

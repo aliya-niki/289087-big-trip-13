@@ -26,9 +26,10 @@ const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElements = tripMainElement.querySelectorAll(`.trip-controls h2`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
+render(tripControlsElements[0], createMenuTemplate(), `afterend`);// Меню
+render(tripControlsElements[1], createFiltersTemplate(), `afterend`);// Фильтры
+
 if (!events) {
-  render(tripControlsElements[0], createMenuTemplate(), `afterend`);// Меню
-  render(tripControlsElements[1], createFiltersTemplate(), `afterend`);// Фильтры
   render(tripEventsElement, createListEmptyTemplate(), `beforeend`);
 } else {
   render(tripMainElement, createTripInfoTemplate(tripStartDate, tripFinishDate, tripDestinations), `afterbegin`);// Информация о маршруте
@@ -36,8 +37,6 @@ if (!events) {
   const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
   render(tripInfoElement, createTripCostTemplate(), `beforeend`);// Стоимость поездки
 
-  render(tripControlsElements[0], createMenuTemplate(), `afterend`);// Меню
-  render(tripControlsElements[1], createFiltersTemplate(), `afterend`);// Фильтры
   render(tripEventsElement, createSortTemplate(), `afterbegin`);// Сортировка
 
   render(tripEventsElement, createEventsListTemplate(), `beforeend`);
