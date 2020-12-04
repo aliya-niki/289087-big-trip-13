@@ -8,7 +8,7 @@ import {createEventsListTemplate} from "./view/events-list.js";
 import {createTripPointTemplate} from "./view/trip-event.js";// Точка маршрута (в списке)
 import {createListEmptyTemplate} from "./view/list-empty.js";
 import {generateEvent} from "./mock/event.js";
-import {sortEventsByDate} from "../src/utils.js";
+import {sortEventsByDate} from "./utils.js";
 
 const EVENTS_NUMBER = 15;
 
