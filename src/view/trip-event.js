@@ -16,7 +16,7 @@ const createOfferTemplate = (offers) => {
 };
 
 export const createTripPointTemplate = (event) => {
-  const {destination, eventType, availableOffers, startTime, finishTime, duration, price, isFavorite} = event;
+  const {destination, eventType, offers, startTime, finishTime, duration, price, isFavorite} = event;
 
   const durationFormat = (durationInMin) => {
     let days = Math.floor(durationInMin / MIN_IN_DAY);
@@ -47,7 +47,7 @@ export const createTripPointTemplate = (event) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${createOfferTemplate(availableOffers)}
+        ${createOfferTemplate(offers)}
       </ul>
       <button class="event__favorite-btn ${favoriteActive}" type="button">
         <span class="visually-hidden">Add to favorite</span>

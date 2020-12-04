@@ -22,7 +22,7 @@ const generateOffers = () => {
     for (let i = 0; i < offersNumber; i++) {
       let randomIndex = getRandomInteger(0, offersDescriptions.length - 1);
       availableOffers.push({
-        id: offersDescriptions[randomIndex].replaceAll(` `, `-`).toLowerCase(),
+        type: eventType.toLowerCase(),
         description: offersDescriptions[randomIndex],
         price: getRandomInteger(1, 50)
       });
@@ -101,7 +101,7 @@ export const generateEvent = () => {
     description: generateDestinationDescription(),
     photos: generateDestinationPhoto(),
     eventType,
-    availableOffers,
+    offers: availableOffers,
     isFavorite: Boolean(getRandomInteger(0, 1)),
     startTime,
     finishTime,
