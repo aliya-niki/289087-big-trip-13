@@ -1,8 +1,48 @@
 import flatpickr from "flatpickr";
-import {destinationsList, eventTypesList} from "../mock/event.js";
+import {DESTINATIONS, EVENT_TYPES} from "../utils.js";
+
+const createEventTypeTemplate = (eventType) => {
+  return EVENT_TYPES.map((eventTypeItem) => `<div class="event__type-item">
+    <input id="event-type-${eventTypeItem.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventTypeItem.toLowerCase()}" ${eventTypeItem === eventType ? `checked` : ``}>
+    <label class="event__type-label  event__type-label--${eventTypeItem.toLowerCase()}" for="event-type-${eventTypeItem.toLowerCase()}-1">${eventTypeItem}</label>
+  </div>`).join(``);
+};
+
+const createOfferTemplate = (availableOffers, checkedOffers) => {
+  return `<section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      ${availableOffers.map((offer) => `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}-1" type="checkbox" name="event-offer-${offer.id}" ${checkedOffers.includes(offer) ? `checked` : ``}>
+      <label class="event__offer-label" for="event-offer-${offer.id}-1">
+        <span class="event__offer-title">${offer.description}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>`).join(``)}
+      </div>
+  </section>`;
+};
+
+const createPhotoTemplate = (photo) => {
+  return `<img class="event__photo" src="${photo}" alt="Event photo"></img>`;
+};
+
+const createDescriptionTemplate = (description, photos) => {
+  return `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${description}</p>
+
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+      ${photos.map((photo) => createPhotoTemplate(photo)).join(``)}
+      </div>
+    </div>
+  </section>`;
+};
 
 export const createEditEventFormTemplate = (event = {}) => {
-  const {destination = ``, description = ``, destinationPhotos = ``, eventType = ``, offers = ``, startTime = null, finishTime = null, price = ``} = event;
+  const {destination, description, photos, eventType, availableOffers, checkedOffers, startTime, finishTime, price} = event;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -17,14 +57,7 @@ export const createEditEventFormTemplate = (event = {}) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-
-              ${eventTypesList.map((eventTypesListItem) => `
-                <div class="event__type-item">
-                  <input id="event-type-${eventTypesListItem.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventTypesListItem.toLowerCase()}" ${eventTypesListItem === eventType ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--${eventTypesListItem.toLowerCase()}" for="event-type-${eventTypesListItem.toLowerCase()}-1">${eventTypesListItem}</label>
-                </div>
-              `).join(``)}
-
+              ${createEventTypeTemplate(eventType)}
             </fieldset>
           </div>
         </div>
@@ -35,7 +68,7 @@ export const createEditEventFormTemplate = (event = {}) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${destinationsList.map((destinationItem) => `<option value="${destinationItem}"></option>`).join(``)}
+            ${DESTINATIONS.map((destinationItem) => `<option value="${destinationItem}"></option>`).join(``)}
           </datalist>
         </div>
 
@@ -64,34 +97,9 @@ export const createEditEventFormTemplate = (event = {}) => {
 
       </header>
       <section class="event__details">
-        ${eventType ? `<section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          <div class="event__available-offers">
-            ${offers.map((offer) => `
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.type}-1" type="checkbox" name="event-offer-${offer.type}" checked>
-                <label class="event__offer-label" for="event-offer-${offer.type}-1">
-                  <span class="event__offer-title">${offer.description}</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">${offer.price}</span>
-                </label>
-              </div>
-            `).join(``)}
-          </div>
-        </section>
-        ` : ``
-}
+        ${eventType ? createOfferTemplate(availableOffers, checkedOffers) : ``}
 
-        ${destination !== `` ? `<section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
-
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-            ${destinationPhotos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo"></img>`).join(``)}
-            </div>
-          </div>
-        </section>` : ``}
+        ${destination !== `` ? createDescriptionTemplate(description, photos) : ``}
 
       </section>
     </form>

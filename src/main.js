@@ -8,12 +8,9 @@ import {createEventsListTemplate} from "./view/events-list.js";
 import {createTripPointTemplate} from "./view/trip-event.js";// Точка маршрута (в списке)
 import {createListEmptyTemplate} from "./view/list-empty.js";
 import {generateEvent} from "./mock/event.js";
+import {sortEventsByDate} from "../src/utils.js";
 
 const EVENTS_NUMBER = 15;
-
-const sortEventsByDate = (a, b) => {
-  return new Date(a.startTime) - new Date(b.startTime);
-};
 
 const events = new Array(EVENTS_NUMBER).fill().map(generateEvent).sort(sortEventsByDate);
 const tripStartDate = events[0].startTime;
@@ -47,7 +44,6 @@ if (!events) {
   const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
   render(tripEventsListElement, createEditEventFormTemplate(events[0]), `beforeend`);// Форма редактирования
-  render(tripEventsListElement, createEditEventFormTemplate(), `beforeend`);// Форма создания
 
   const renderTripEvents = (number) => {
     for (let i = 1; i < number; i++) {

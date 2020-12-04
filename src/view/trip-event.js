@@ -3,24 +3,16 @@ import flatpickr from "flatpickr";
 const MIN_IN_DAY = 1440;
 const MIN_IN_HOUR = 60;
 
-const createOfferTemplate = (description, price) => {
-  return `<li class="event__offer">
-    <span class="event__offer-title">${description}</span>
+const createOfferTemplate = (offers) => {
+  return offers.map((offer) => `<li class="event__offer">
+    <span class="event__offer-title">${offer.description}</span>
     &plus;&euro;&nbsp;
-    <span class="event__offer-price">${price}</span>
-  </li>`;
-};
-
-const renderOffers = (offers) => {
-  let newFragment = ``;
-  for (let value of offers) {
-    newFragment += createOfferTemplate(value.description, value.price);
-  }
-  return newFragment;
+    <span class="event__offer-price">${offer.price}</span>
+  </li>`).join(``);
 };
 
 export const createTripPointTemplate = (event) => {
-  const {destination, eventType, offers, startTime, finishTime, duration, price, isFavorite} = event;
+  const {destination, eventType, checkedOffers, startTime, finishTime, duration, price, isFavorite} = event;
 
   const durationFormat = (durationInMin) => {
     let days = Math.floor(durationInMin / MIN_IN_DAY);
@@ -35,7 +27,7 @@ export const createTripPointTemplate = (event) => {
     <div class="event">
       <time class="event__date" datetime="${flatpickr.formatDate(startTime, `Y-m-d`)}">${flatpickr.formatDate(startTime, `M d`)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType.toLowerCase()}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${eventType} ${destination}</h3>
       <div class="event__schedule">
@@ -51,7 +43,7 @@ export const createTripPointTemplate = (event) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${renderOffers(offers)}
+        ${createOfferTemplate(checkedOffers)}
       </ul>
       <button class="event__favorite-btn ${favoriteActive}" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -64,5 +56,4 @@ export const createTripPointTemplate = (event) => {
       </button>
     </div>
   </li>`;
-
 };

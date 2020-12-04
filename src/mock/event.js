@@ -1,11 +1,37 @@
 import dayjs from "dayjs";
+import {getRandomInteger, DESTINATIONS, EVENT_TYPES} from "../utils.js";
 
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
+const offersDescriptions = [
+  `Add luggage`,
+  `Switch to comfort`,
+  `Add meal`,
+  `Choose seats`,
+  `Travel by train`,
+  `Book tickets`,
+  `Lunch in city`,
+  `Add breakfast`,
+  `Order Uber`,
+];
 
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
+const generateOffers = () => {
+  const offers = new Map();
+  EVENT_TYPES.forEach((eventType) => {
+    let availableOffers = [];
+    let offersNumber = getRandomInteger(0, 5);
+
+    for (let i = 0; i < offersNumber; i++) {
+      let randomIndex = getRandomInteger(0, offersDescriptions.length - 1);
+      availableOffers.push({
+        id: offersDescriptions[randomIndex].replaceAll(` `, `-`).toLowerCase(),
+        description: offersDescriptions[randomIndex],
+        price: getRandomInteger(0, 50)
+      });
+    }
+    offers.set(eventType, availableOffers);
+  });
+  return offers;
 };
+const offers = generateOffers();
 
 const generateDate = () => {
   const maxDaysGap = 10;
@@ -46,102 +72,15 @@ const generateDestinationDescription = () => {
   return destinationDescription;
 };
 
-const destinationsList = [
-  `Amsterdam`,
-  `Chamonix`,
-  `Geneva`,
-  `Paris`,
-  `Zurich`,
-  `London`,
-  `Stuttgart`
-];
-
 const generateDestination = (destinations) => {
   const randomIndex = getRandomInteger(0, destinations.length - 1);
   return destinations[randomIndex];
 };
 
-const eventTypesList = [
-  `Taxi`,
-  `Bus`,
-  `Train`,
-  `Ship`,
-  `Transport`,
-  `Drive`,
-  `Flight`,
-  `Check-in`,
-  `Sightseeing`,
-  `Restaurant`
-];
-
 const generateEventType = (eventTypes) => {
   const randomIndex = getRandomInteger(0, eventTypes.length - 1);
   return eventTypes[randomIndex];
 };
-
-const offersList = [
-  {
-    description: `Add luggage`,
-    type: `luggage`,
-    price: `30`,
-  },
-  {
-    description: `Switch to comfort`,
-    type: `comfort`,
-    price: `100`,
-  },
-  {
-    description: `Add meal`,
-    type: `meal`,
-    price: `15`,
-  },
-  {
-    description: `Choose seats`,
-    type: `seats`,
-    price: `5`,
-  },
-  {
-    description: `Travel by train`,
-    type: `train`,
-    price: `40`,
-  },
-  {
-    description: `Book tickets`,
-    type: `tickets`,
-    price: `40`,
-  },
-  {
-    description: `Lunch in city`,
-    type: `lunch`,
-    price: `30`,
-  },
-  {
-    description: `Add breakfast`,
-    type: `breakfast`,
-    price: `50`,
-  },
-  {
-    description: `Order Uber`,
-    type: `uber`,
-    price: `20`,
-  }
-];
-
-const generateOffers = () => {
-  const maxOffersNumber = 5;
-
-  let offers = new Set();
-  for (let i = 0; i < getRandomInteger(1, maxOffersNumber); i++) {
-    let randomIndex = getRandomInteger(0, offersList.length - 1);
-    offers.add(offersList[randomIndex]);
-  }
-  return Array.from(offers);
-};
-
-const offers = new Map();
-eventTypesList.forEach((eventType) => {
-  offers.set(eventType, generateOffers());
-});
 
 const generateDestinationPhoto = () => {
   let photos = [];
@@ -151,18 +90,26 @@ const generateDestinationPhoto = () => {
   return photos;
 };
 
-
-const generateEvent = () => {
+export const generateEvent = () => {
   let startTime = generateDate();
   let finishTime = generateFinishTime(startTime);
   let duration = dayjs(finishTime).diff(startTime, `minute`);
-  let eventType = generateEventType(eventTypesList);
+  let eventType = generateEventType(EVENT_TYPES);
+  let availableOffers = offers.get(eventType);
+  let checkedOffers = [];
+  availableOffers.forEach((offer) => {
+    let isChecked = Boolean(getRandomInteger(0, 1));
+    if (isChecked) {
+      checkedOffers.push(offer);
+    }
+  });
   return {
-    destination: generateDestination(destinationsList),
+    destination: generateDestination(DESTINATIONS),
     description: generateDestinationDescription(),
-    destinationPhotos: generateDestinationPhoto(),
+    photos: generateDestinationPhoto(),
     eventType,
-    offers: offers.get(eventType),
+    availableOffers,
+    checkedOffers,
     isFavorite: Boolean(getRandomInteger(0, 1)),
     startTime,
     finishTime,
@@ -170,5 +117,3 @@ const generateEvent = () => {
     price: getRandomInteger(0, 1000)
   };
 };
-
-export {destinationsList, eventTypesList, generateEvent};
