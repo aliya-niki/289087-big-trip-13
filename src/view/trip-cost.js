@@ -6,7 +6,7 @@ const createTripCostTemplate = () => {
   </p>`;
 };
 
-export default class TripCost {
+export default class TripCostView {
   constructor() {
     this._element = null;
   }

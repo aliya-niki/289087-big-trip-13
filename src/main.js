@@ -5,8 +5,8 @@ import EditEventFormView from "./view/edit-event-form.js";// Форма реда
 import TripCostView from "./view/trip-cost.js";// Стоимость поездки
 import SortView from "./view/sort.js";// Сортировка
 import EventsListView from "./view/events-list.js";
-import EventView from "./view/trip-event.js";// Точка маршрута (в списке)
-import ListEmptyMessageView from "./view/list-empty.js";
+import TripEventView from "./view/trip-event.js";// Точка маршрута (в списке)
+import ListEmptyView from "./view/list-empty.js";
 import {generateEvent} from "./mock/event.js";
 import {sortEventsByDate, render, RenderPosition} from "./utils.js";
 
@@ -23,7 +23,7 @@ const tripControlsElements = tripMainElement.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 const renderEvent = (eventsListElement, eventElement) => {
-  const eventComponent = new EventView(eventElement);
+  const eventComponent = new TripEventView(eventElement);
   const editEventComponent = new EditEventFormView(eventElement);
 
   const replaceFormToEvent = () => {
@@ -50,7 +50,7 @@ render(tripControlsElements, new MenuView().getElement(), RenderPosition.AFTERBE
 render(tripControlsElements, new FiltersView().getElement(), RenderPosition.BEFOREEND);// Фильтры
 
 if (!events) {
-  render(tripEventsElement, new ListEmptyMessageView().getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, new ListEmptyView().getElement(), RenderPosition.BEFOREEND);
 } else {
   const tripInfoComponent = new TripInfoView(tripStartDate, tripFinishDate, tripDestinations);
   render(tripMainElement, tripInfoComponent.getElement(), RenderPosition.AFTERBEGIN);// Информация о маршруте

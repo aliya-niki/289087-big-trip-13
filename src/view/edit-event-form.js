@@ -109,7 +109,7 @@ const createEditEventFormTemplate = (event = {}) => {
   </li>`;
 };
 
-export default class EditEventForm {
+export default class EditEventFormView {
   constructor(event) {
     this._event = event;
     this._element = null;

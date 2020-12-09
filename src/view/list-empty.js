@@ -4,7 +4,7 @@ const createListEmptyTemplate = () => {
   return `<p class="trip-events__msg">Click New Event to create your first point</p>`;
 };
 
-export default class ListEmptyMessage {
+export default class ListEmptyView {
   constructor() {
     this._element = null;
   }

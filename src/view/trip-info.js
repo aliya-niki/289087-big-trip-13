@@ -37,7 +37,7 @@ const createTripInfoTemplate = (tripStartDate, tripFinishDate, tripDestinations)
   </section>`;
 };
 
-export default class TripInfo {
+export default class TripInfoView {
   constructor(tripStartDate, tripFinishDate, tripDestinations) {
     this._tripStartDate = tripStartDate;
     this._tripFinishDate = tripFinishDate;
