@@ -1,5 +1,5 @@
 import flatpickr from "flatpickr";
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger, createElement} from "../utils.js";
 
 const MIN_IN_DAY = 1440;
 const MIN_IN_HOUR = 60;
@@ -15,7 +15,7 @@ const createOfferTemplate = (offers) => {
   }).join(``);
 };
 
-export const createTripPointTemplate = (event) => {
+const createTripEventTemplate = (event) => {
   const {destination, eventType, offers, startTime, finishTime, duration, price, isFavorite} = event;
 
   const durationFormat = (durationInMin) => {
@@ -61,3 +61,26 @@ export const createTripPointTemplate = (event) => {
     </div>
   </li>`;
 };
+
+export default class Event {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
