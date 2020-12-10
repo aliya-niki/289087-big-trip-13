@@ -1,5 +1,5 @@
 import flatpickr from "flatpickr";
-import {DESTINATIONS, EVENT_TYPES, getRandomInteger} from "../utils.js";
+import {DESTINATIONS, EVENT_TYPES, getRandomInteger, createElement} from "../utils.js";
 
 const createEventTypeTemplate = (eventType) => {
   return EVENT_TYPES.map((eventTypeItem) => `<div class="event__type-item">
@@ -44,7 +44,7 @@ const createDescriptionTemplate = (description, photos) => {
   </section>`;
 };
 
-export const createEditEventFormTemplate = (event = {}) => {
+const createEditEventFormTemplate = (event = {}) => {
   const {destination, description, photos, eventType, offers, startTime, finishTime, price} = event;
 
   return `<li class="trip-events__item">
@@ -108,3 +108,26 @@ export const createEditEventFormTemplate = (event = {}) => {
     </form>
   </li>`;
 };
+
+export default class EditEventFormView {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditEventFormTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
