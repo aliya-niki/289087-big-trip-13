@@ -8,7 +8,8 @@ import EventsListView from "./view/events-list.js";
 import TripEventView from "./view/trip-event.js";// Точка маршрута (в списке)
 import ListEmptyView from "./view/list-empty.js";
 import {generateEvent} from "./mock/event.js";
-import {sortEventsByDate, render, RenderPosition} from "./utils.js";
+import {render, RenderPosition, replace} from "./utils/render.js";
+import {sortEventsByDate} from "./utils/events.js";
 
 const EVENTS_NUMBER = 15;
 
@@ -26,45 +27,37 @@ const renderEvent = (eventsListElement, eventElement) => {
   const eventComponent = new TripEventView(eventElement);
   const editEventComponent = new EditEventFormView(eventElement);
 
-  const replaceFormToEvent = () => {
-    eventsListElement.replaceChild(eventComponent.getElement(), editEventComponent.getElement());
-  };
-  const replaceEventToForm = () => {
-    eventsListElement.replaceChild(editEventComponent.getElement(), eventComponent.getElement());
-  };
-
-  eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-    replaceEventToForm();
+  eventComponent.setClickHandler(() => {
+    replace(editEventComponent, eventComponent);
   });
 
-  editEventComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
-    replaceFormToEvent();
+  editEventComponent.setFormSubmitHandler(() => {
+    replace(eventComponent, editEventComponent);
   });
 
   render(eventsListElement, eventComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
 
-render(tripControlsElements, new MenuView().getElement(), RenderPosition.AFTERBEGIN);// Меню
-render(tripControlsElements, new FiltersView().getElement(), RenderPosition.BEFOREEND);// Фильтры
+render(tripControlsElements, new MenuView(), RenderPosition.AFTERBEGIN);// Меню
+render(tripControlsElements, new FiltersView(), RenderPosition.BEFOREEND);// Фильтры
 
 if (!events) {
-  render(tripEventsElement, new ListEmptyView().getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, new ListEmptyView(), RenderPosition.BEFOREEND);
 } else {
   const tripInfoComponent = new TripInfoView(tripStartDate, tripFinishDate, tripDestinations);
-  render(tripMainElement, tripInfoComponent.getElement(), RenderPosition.AFTERBEGIN);// Информация о маршруте
+  render(tripMainElement, tripInfoComponent, RenderPosition.AFTERBEGIN);// Информация о маршруте
 
-  render(tripInfoComponent.getElement(), new TripCostView().getElement(), RenderPosition.BEFOREEND);// Стоимость поездки
+  render(tripInfoComponent, new TripCostView(), RenderPosition.BEFOREEND);// Стоимость поездки
 
-  render(tripEventsElement, new SortView().getElement(), RenderPosition.AFTERBEGIN);// Сортировка
+  render(tripEventsElement, new SortView(), RenderPosition.AFTERBEGIN);// Сортировка
 
   const eventsListComponent = new EventsListView();
-  render(tripEventsElement, eventsListComponent.getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, eventsListComponent, RenderPosition.BEFOREEND);
 
   const renderTripEvents = (number) => {
     for (let i = 0; i < number; i++) {
-      renderEvent(eventsListComponent.getElement(), events[i]);
+      renderEvent(eventsListComponent, events[i]);
     }
   };
 

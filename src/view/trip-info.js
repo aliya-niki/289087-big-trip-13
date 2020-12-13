@@ -1,5 +1,5 @@
 import flatpickr from "flatpickr";
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const renderTripDestinations = (tripList) => {
   const tripLength = tripList.length;
@@ -37,27 +37,15 @@ const createTripInfoTemplate = (tripStartDate, tripFinishDate, tripDestinations)
   </section>`;
 };
 
-export default class TripInfoView {
+export default class TripInfoView extends AbstractView {
   constructor(tripStartDate, tripFinishDate, tripDestinations) {
+    super();
     this._tripStartDate = tripStartDate;
     this._tripFinishDate = tripFinishDate;
     this._tripDestinations = tripDestinations;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._tripStartDate, this._tripFinishDate, this._tripDestinations);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

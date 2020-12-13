@@ -1,5 +1,7 @@
 import flatpickr from "flatpickr";
-import {getRandomInteger, createElement} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
+import AbstractView from "./abstract.js";
+
 
 const MIN_IN_DAY = 1440;
 const MIN_IN_HOUR = 60;
@@ -62,25 +64,24 @@ const createTripEventTemplate = (event) => {
   </li>`;
 };
 
-export default class TripEventView {
+export default class TripEventView extends AbstractView {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createTripEventTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
   }
 
-  removeElement() {
-    this._element = null;
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._clickHandler);
   }
 }
