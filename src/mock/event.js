@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
-import {getRandomInteger, DESTINATIONS, EVENT_TYPES} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
+import {DESTINATIONS, EVENT_TYPES} from "../utils/events.js";
 
 const offersDescriptions = [
   `Add luggage`,

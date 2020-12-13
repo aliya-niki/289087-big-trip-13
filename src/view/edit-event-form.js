@@ -1,5 +1,7 @@
 import flatpickr from "flatpickr";
-import {DESTINATIONS, EVENT_TYPES, getRandomInteger, createElement} from "../utils.js";
+import {DESTINATIONS, EVENT_TYPES} from "../utils/events.js";
+import {getRandomInteger} from "../utils/common.js";
+import AbstractView from "./abstract.js";
 
 const createEventTypeTemplate = (eventType) => {
   return EVENT_TYPES.map((eventTypeItem) => `<div class="event__type-item">
@@ -109,25 +111,24 @@ const createEditEventFormTemplate = (event = {}) => {
   </li>`;
 };
 
-export default class EditEventFormView {
+export default class EditEventFormView extends AbstractView {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createEditEventFormTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.submit();
   }
 
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(callback) {
+    this._callback.submit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 }
