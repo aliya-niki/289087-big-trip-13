@@ -91,6 +91,8 @@ const generateDestinationPhoto = () => {
   return photos;
 };
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 export const generateEvent = () => {
   let startTime = generateDate();
   let finishTime = generateFinishTime(startTime);
@@ -107,6 +109,7 @@ export const generateEvent = () => {
     startTime,
     finishTime,
     duration,
-    price: getRandomInteger(0, 1000)
+    price: getRandomInteger(0, 1000),
+    id: generateId()
   };
 };
