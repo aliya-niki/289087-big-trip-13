@@ -1,15 +1,12 @@
 import flatpickr from "flatpickr";
-import {getRandomInteger} from "../utils/common.js";
 import AbstractView from "./abstract.js";
-
 
 const MIN_IN_DAY = 1440;
 const MIN_IN_HOUR = 60;
 
 const createOfferTemplate = (offers) => {
   return offers.map((offer) => {
-    let isChecked = Boolean(getRandomInteger(0, 1));
-    return isChecked ? `<li class="event__offer">
+    return offer.isChecked ? `<li class="event__offer">
       <span class="event__offer-title">${offer.description}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${offer.price}</span>
