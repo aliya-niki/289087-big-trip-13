@@ -1,15 +1,12 @@
 import flatpickr from "flatpickr";
-import {getRandomInteger} from "../utils/common.js";
 import AbstractView from "./abstract.js";
-
 
 const MIN_IN_DAY = 1440;
 const MIN_IN_HOUR = 60;
 
 const createOfferTemplate = (offers) => {
   return offers.map((offer) => {
-    let isChecked = Boolean(getRandomInteger(0, 1));
-    return isChecked ? `<li class="event__offer">
+    return offer.isChecked ? `<li class="event__offer">
       <span class="event__offer-title">${offer.description}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${offer.price}</span>
@@ -69,6 +66,7 @@ export default class TripEventView extends AbstractView {
     super();
     this._event = event;
     this._clickHandler = this._clickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -80,8 +78,18 @@ export default class TripEventView extends AbstractView {
     this._callback.click();
   }
 
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
   setClickHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._clickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteClickHandler);
   }
 }

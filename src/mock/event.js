@@ -22,11 +22,15 @@ const generateOffers = () => {
 
     for (let i = 0; i < offersNumber; i++) {
       let randomIndex = getRandomInteger(0, offersDescriptions.length - 1);
+      let randomDescription = offersDescriptions[randomIndex];
+
       availableOffers.push({
         type: eventType.toLowerCase(),
-        description: offersDescriptions[randomIndex],
-        price: getRandomInteger(1, 50)
+        description: randomDescription,
+        price: getRandomInteger(1, 50),
+        isChecked: Boolean(getRandomInteger(0, 1))
       });
+
     }
     offers.set(eventType, availableOffers);
   });
@@ -91,6 +95,8 @@ const generateDestinationPhoto = () => {
   return photos;
 };
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 export const generateEvent = () => {
   let startTime = generateDate();
   let finishTime = generateFinishTime(startTime);
@@ -107,6 +113,7 @@ export const generateEvent = () => {
     startTime,
     finishTime,
     duration,
-    price: getRandomInteger(0, 1000)
+    price: getRandomInteger(0, 1000),
+    id: generateId()
   };
 };
