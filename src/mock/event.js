@@ -23,15 +23,14 @@ const generateOffers = () => {
     for (let i = 0; i < offersNumber; i++) {
       let randomIndex = getRandomInteger(0, offersDescriptions.length - 1);
       let randomDescription = offersDescriptions[randomIndex];
-      if (!availableOffers.find((item) => item.description === randomDescription)) {
-        availableOffers.push({
-          name: randomDescription.replaceAll(` `, `-`).toLowerCase(),
-          type: eventType.toLowerCase(),
-          description: randomDescription,
-          price: getRandomInteger(1, 50),
-          isChecked: Boolean(getRandomInteger(0, 1))
-        });
-      }
+
+      availableOffers.push({
+        type: eventType.toLowerCase(),
+        description: randomDescription,
+        price: getRandomInteger(1, 50),
+        isChecked: Boolean(getRandomInteger(0, 1))
+      });
+
     }
     offers.set(eventType, availableOffers);
   });
