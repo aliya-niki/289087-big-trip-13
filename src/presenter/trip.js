@@ -8,7 +8,7 @@ import EventPresenter from "./event.js";
 import {render, RenderPosition} from "../utils/render.js";
 import {updateItem} from "../utils/common.js";
 
-export default class Trip {
+export default class TripPresenter {
   constructor(tripMainContainer, tripEventsContainer) {
     this._tripMainContainer = tripMainContainer;
     this._tripEventsContainer = tripEventsContainer;

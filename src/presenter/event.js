@@ -19,6 +19,7 @@ export default class EventPresenter {
     this._handleClick = this._handleClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._onFormEscPressHandler = this._onFormEscPressHandler.bind(this);
   }
 
   init(event) {
@@ -52,19 +53,30 @@ export default class EventPresenter {
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
+      this._editEventComponent.reset(this._event);
       this._replaceFormToCard();
     }
   }
 
   _replaceFormToCard() {
     replace(this._eventComponent, this._editEventComponent);
+    document.removeEventListener(`keydown`, this._onFormEscPressHandler);
     this._mode = Mode.DEFAULT;
   }
 
   _replaceCardToForm() {
     replace(this._editEventComponent, this._eventComponent);
+    document.addEventListener(`keydown`, this._onFormEscPressHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
+  }
+
+  _onFormEscPressHandler(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      this._editEventComponent.reset(this._event);
+      this._replaceFormToCard();
+    }
   }
 
   _handleClick() {
