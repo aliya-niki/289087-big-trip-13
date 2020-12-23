@@ -13,14 +13,17 @@ const createOffersTemplate = (offers) => {
   return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${offers.map((offer) => `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="${offer.id}" ${offer.isChecked ? `checked` : ``}>
-      <label class="event__offer-label" for="${offer.id}">
-        <span class="event__offer-title">${offer.description}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`).join(``)}
+      ${offers.map((offer) => {
+    const {id, isChecked, description, price} = offer;
+    return `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" ${isChecked ? `checked` : ``} data-id=${id}>
+          <label class="event__offer-label" for="event-offer-${id}">
+            <span class="event__offer-title">${description}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${price}</span>
+          </label>
+        </div>`;
+  }).join(``)}
     </div>
   </section>`;
 };
@@ -114,6 +117,7 @@ export default class EditEventFormView extends SmartView {
     super();
     this._data = EditEventFormView.parseEventToData(event);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._offersCheckHandler = this._offersCheckHandler.bind(this);
@@ -128,6 +132,7 @@ export default class EditEventFormView extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.submit);
+    this.setRollupButtonClickHandler(this._callback.rollupButtonClick);
   }
 
   _setInnerHandlers() {
@@ -154,6 +159,11 @@ export default class EditEventFormView extends SmartView {
 
   _destinationChangeHandler(evt) {
     evt.preventDefault();
+    if (!DESTINATIONS.includes(evt.target.value)) {
+      evt.target.setCustomValidity(`Choose from suggested values`);
+      evt.target.reportValidity();
+      return;
+    }
     this.updateData({
       destination: evt.target.value,
       description: DESTINATIONS_DESCRIPTIONS.get(evt.target.value).description,
@@ -163,7 +173,7 @@ export default class EditEventFormView extends SmartView {
 
   _offersCheckHandler(evt) {
     evt.preventDefault();
-    let changedOfferIndex = this._data.offers.findIndex((offer) => offer.id === evt.target.id);
+    let changedOfferIndex = this._data.offers.findIndex((offer) => offer.id === evt.target.dataset.id);
     let update = this._data.offers.slice();
     update[changedOfferIndex] = Object.assign(
         {},
@@ -188,6 +198,15 @@ export default class EditEventFormView extends SmartView {
   setFormSubmitHandler(callback) {
     this._callback.submit = callback;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  _rollupButtonClickHandler(event) {
+    this._callback.rollupButtonClick(EditEventFormView.parseEventToData(event));
+  }
+
+  setRollupButtonClickHandler(callback) {
+    this._callback.rollupButtonClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._rollupButtonClickHandler);
   }
 
   static parseEventToData(event) {

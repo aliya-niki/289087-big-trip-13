@@ -48,7 +48,7 @@ const generateOffers = () => {
 
       availableOffers.push({
         type: eventType.toLowerCase(),
-        id: `event-offer-${eventType.toLowerCase()}-${i}`,
+        id: `${eventType.toLowerCase()}-${i}`,
         description: randomDescription,
         price: getRandomInteger(1, 50),
         isChecked: false
