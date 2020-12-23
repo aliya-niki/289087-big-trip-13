@@ -1,6 +1,7 @@
 import TripEventView from "../view/trip-event.js";
 import EditEventFormView from "../view/edit-event-form.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {ESC_KEY} from "../utils/common.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -19,6 +20,8 @@ export default class EventPresenter {
     this._handleClick = this._handleClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._onFormEscPressHandler = this._onFormEscPressHandler.bind(this);
+    this._handleRollupButtonClick = this._handleRollupButtonClick.bind(this);
   }
 
   init(event) {
@@ -31,6 +34,7 @@ export default class EventPresenter {
     this._editEventComponent = new EditEventFormView(event);
     this._eventComponent.setClickHandler(this._handleClick);
     this._editEventComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._editEventComponent.setRollupButtonClickHandler(this._handleRollupButtonClick);
     this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     if (prevEventComponent === null || prevEditEventComponent === null) {
@@ -52,19 +56,30 @@ export default class EventPresenter {
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
+      this._editEventComponent.reset(this._event);
       this._replaceFormToCard();
     }
   }
 
   _replaceFormToCard() {
     replace(this._eventComponent, this._editEventComponent);
+    document.removeEventListener(`keydown`, this._onFormEscPressHandler);
     this._mode = Mode.DEFAULT;
   }
 
   _replaceCardToForm() {
     replace(this._editEventComponent, this._eventComponent);
+    document.addEventListener(`keydown`, this._onFormEscPressHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
+  }
+
+  _onFormEscPressHandler(evt) {
+    if (evt.key === ESC_KEY) {
+      evt.preventDefault();
+      this._editEventComponent.reset(this._event);
+      this._replaceFormToCard();
+    }
   }
 
   _handleClick() {
@@ -73,6 +88,11 @@ export default class EventPresenter {
 
   _handleFormSubmit(event) {
     this._changeData(event);
+    this._replaceFormToCard();
+  }
+
+  _handleRollupButtonClick(event) {
+    this._editEventComponent.reset(event);
     this._replaceFormToCard();
   }
 

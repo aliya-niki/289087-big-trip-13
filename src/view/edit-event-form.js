@@ -1,6 +1,6 @@
 import flatpickr from "flatpickr";
-import {DESTINATIONS, EVENT_TYPES} from "../utils/events.js";
-import AbstractView from "./abstract.js";
+import {DESTINATIONS, EVENT_TYPES, OFFERS, DESTINATIONS_DESCRIPTIONS} from "../utils/events.js";
+import SmartView from "./smart.js";
 
 const createEventTypeTemplate = (eventType) => {
   return EVENT_TYPES.map((eventTypeItem) => `<div class="event__type-item">
@@ -9,19 +9,22 @@ const createEventTypeTemplate = (eventType) => {
   </div>`).join(``);
 };
 
-const createOfferTemplate = (offers) => {
+const createOffersTemplate = (offers) => {
   return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${offers.map((offer, index) => `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.type}-${index}" type="checkbox" name="event-offer-${offer.type}-${index}" ${offer.isChecked ? `checked` : ``}>
-      <label class="event__offer-label" for="event-offer-${offer.type}-${index}">
-        <span class="event__offer-title">${offer.description}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`).join(``)}
-      </div>
+      ${offers.map((offer) => {
+    const {id, isChecked, description, price} = offer;
+    return `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" ${isChecked ? `checked` : ``} data-id=${id}>
+          <label class="event__offer-label" for="event-offer-${id}">
+            <span class="event__offer-title">${description}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${price}</span>
+          </label>
+        </div>`;
+  }).join(``)}
+    </div>
   </section>`;
 };
 
@@ -44,6 +47,8 @@ const createDescriptionTemplate = (description, photos) => {
 
 const createEditEventFormTemplate = (event = {}) => {
   const {destination, description, photos, eventType, offers, startTime, finishTime, price} = event;
+
+  const offersTemplate = createOffersTemplate(offers);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -98,7 +103,7 @@ const createEditEventFormTemplate = (event = {}) => {
 
       </header>
       <section class="event__details">
-        ${offers.length ? createOfferTemplate(offers) : ``}
+        ${offers.length ? offersTemplate : ``}
 
         ${destination !== `` ? createDescriptionTemplate(description, photos) : ``}
 
@@ -107,24 +112,108 @@ const createEditEventFormTemplate = (event = {}) => {
   </li>`;
 };
 
-export default class EditEventFormView extends AbstractView {
+export default class EditEventFormView extends SmartView {
   constructor(event) {
     super();
-    this._event = event;
+    this._data = EditEventFormView.parseEventToData(event);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
+    this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._offersCheckHandler = this._offersCheckHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createEditEventFormTemplate(this._event);
+    return createEditEventFormTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.submit);
+    this.setRollupButtonClickHandler(this._callback.rollupButtonClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__type-list`).addEventListener(`change`, this._eventTypeChangeHandler);
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`input`, this._destinationChangeHandler);
+
+    if (this._data.offers.length) {
+      this.getElement().querySelector(`.event__available-offers`).addEventListener(`change`, this._offersCheckHandler);
+    }
+  }
+
+  _eventTypeChangeHandler(evt) {
+    evt.preventDefault();
+    const getNewEventType = (value) => {
+      return EVENT_TYPES.find((type) => type.toLowerCase() === value);
+    };
+    const newEventType = getNewEventType(evt.target.value);
+
+    this.updateData({
+      eventType: newEventType,
+      offers: OFFERS.get(newEventType)
+    });
+  }
+
+  _destinationChangeHandler(evt) {
+    evt.preventDefault();
+    if (!DESTINATIONS.includes(evt.target.value)) {
+      evt.target.setCustomValidity(`Choose from suggested values`);
+      evt.target.reportValidity();
+      return;
+    }
+    this.updateData({
+      destination: evt.target.value,
+      description: DESTINATIONS_DESCRIPTIONS.get(evt.target.value).description,
+      photos: DESTINATIONS_DESCRIPTIONS.get(evt.target.value).photos,
+    });
+  }
+
+  _offersCheckHandler(evt) {
+    evt.preventDefault();
+    let changedOfferIndex = this._data.offers.findIndex((offer) => offer.id === evt.target.dataset.id);
+    let update = this._data.offers.slice();
+    update[changedOfferIndex] = Object.assign(
+        {},
+        this._data.offers[changedOfferIndex],
+        {isChecked: evt.target.checked}
+    );
+
+    this.updateData({
+      offers: update
+    }, true);
+  }
+
+  reset(event) {
+    this.updateData(EditEventFormView.parseEventToData(event));
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.submit(this._event);
+    this._callback.submit(EditEventFormView.parseDataToEvent(this._data));
   }
 
   setFormSubmitHandler(callback) {
     this._callback.submit = callback;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  _rollupButtonClickHandler(event) {
+    this._callback.rollupButtonClick(EditEventFormView.parseEventToData(event));
+  }
+
+  setRollupButtonClickHandler(callback) {
+    this._callback.rollupButtonClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._rollupButtonClickHandler);
+  }
+
+  static parseEventToData(event) {
+    return Object.assign({}, event);
+  }
+
+  static parseDataToEvent(data) {
+    return Object.assign({}, data);
   }
 }
