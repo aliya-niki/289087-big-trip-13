@@ -51,7 +51,7 @@ const generateOffers = () => {
         id: `${eventType.toLowerCase()}-${i}`,
         description: randomDescription,
         price: getRandomInteger(1, 50),
-        isChecked: false
+        isChecked: Boolean(getRandomInteger(0, 1))
       });
 
     }

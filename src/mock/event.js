@@ -30,9 +30,7 @@ export const generateEvent = () => {
   let finishTime = generateFinishTime(startTime);
   let duration = dayjs(finishTime).diff(startTime, `minute`);
   let eventType = generateEventType(EVENT_TYPES);
-  let offers = OFFERS.get(eventType).map((offer) => {
-    return Object.assign({}, offer, {isChecked: Boolean(getRandomInteger(0, 1))});
-  });
+  let offers = OFFERS.get(eventType);
   let destination = generateDestination(DESTINATIONS);
   return {
     destination,
