@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {getRandomInteger} from "../utils/common.js";
+import {getRandomInteger, generateId} from "../utils/common.js";
 import {DESTINATIONS, EVENT_TYPES, OFFERS, DESTINATIONS_DESCRIPTIONS} from "../utils/events.js";
 
 const generateDate = () => {
@@ -22,8 +22,6 @@ const generateEventType = (eventTypes) => {
   const randomIndex = getRandomInteger(0, eventTypes.length - 1);
   return eventTypes[randomIndex];
 };
-
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 export const generateEvent = () => {
   let startTime = generateDate();

@@ -2,6 +2,7 @@ import TripEventView from "../view/trip-event.js";
 import EditEventFormView from "../view/edit-event-form.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {ESC_KEY} from "../utils/common.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -18,6 +19,7 @@ export default class EventPresenter {
     this._editEventComponent = null;
 
     this._handleClick = this._handleClick.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._onFormEscPressHandler = this._onFormEscPressHandler.bind(this);
@@ -33,6 +35,9 @@ export default class EventPresenter {
     this._eventComponent = new TripEventView(event);
     this._editEventComponent = new EditEventFormView(event);
     this._eventComponent.setClickHandler(this._handleClick);
+    this._editEventComponent.setDeleteEventClickHandler(this._handleDeleteClick);
+
+
     this._editEventComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._editEventComponent.setRollupButtonClickHandler(this._handleRollupButtonClick);
     this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -86,18 +91,32 @@ export default class EventPresenter {
     this._replaceCardToForm();
   }
 
+  _handleDeleteClick(event) {
+    this._changeData(
+        UserAction.DELETE_EVENT,
+        UpdateType.MINOR,
+        event
+    );
+  }
+
   _handleFormSubmit(event) {
-    this._changeData(event);
+    this._changeData(
+        UserAction.UPDATE_EVENT,
+        UpdateType.MINOR,
+        event
+    );
     this._replaceFormToCard();
   }
 
-  _handleRollupButtonClick(event) {
-    this._editEventComponent.reset(event);
+  _handleRollupButtonClick() {
+    this._editEventComponent.reset(this._event);
     this._replaceFormToCard();
   }
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_EVENT,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._event,
