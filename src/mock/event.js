@@ -26,7 +26,6 @@ const generateEventType = (eventTypes) => {
 export const generateEvent = () => {
   let startTime = generateDate();
   let finishTime = generateFinishTime(startTime);
-  let duration = dayjs(finishTime).diff(startTime, `minute`);
   let eventType = generateEventType(EVENT_TYPES);
   let offers = OFFERS.get(eventType);
   let destination = generateDestination(DESTINATIONS);
@@ -39,7 +38,6 @@ export const generateEvent = () => {
     isFavorite: Boolean(getRandomInteger(0, 1)),
     startTime,
     finishTime,
-    duration,
     price: getRandomInteger(0, 1000),
     id: generateId()
   };

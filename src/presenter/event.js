@@ -39,7 +39,11 @@ export default class EventPresenter {
 
 
     this._editEventComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._editEventComponent.setRollupButtonClickHandler(this._handleRollupButtonClick);
+
+    if (!this._editEventComponent._isNewEvent) {
+      this._editEventComponent.setRollupButtonClickHandler(this._handleRollupButtonClick);
+    }
+
     this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     if (prevEventComponent === null || prevEditEventComponent === null) {

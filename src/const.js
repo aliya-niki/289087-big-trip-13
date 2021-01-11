@@ -16,3 +16,14 @@ export const FilterType = {
   FUTURE: `future`
 };
 
+export const SortType = {
+  DEFAULT: `default`,
+  PRICE: `price`,
+  TIME: `time`
+};
+
+export const MenuItem = {
+  TABLE: `Table`,
+  STATS: `Stats`
+};
+

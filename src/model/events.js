@@ -27,7 +27,7 @@ export default class EventsModel extends Observer {
       ...this._events.slice(index + 1)
     ];
 
-    this._notify(updateType, update);
+    this.notify(updateType, update);
   }
 
   addEvent(updateType, update) {
@@ -36,7 +36,7 @@ export default class EventsModel extends Observer {
       ...this._events
     ];
 
-    this._notify(updateType, update);
+    this.notify(updateType, update);
   }
 
   deleteEvent(updateType, update) {
@@ -51,6 +51,6 @@ export default class EventsModel extends Observer {
       ...this._events.slice(index + 1)
     ];
 
-    this._notify(updateType);
+    this.notify(updateType);
   }
 }

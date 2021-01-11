@@ -2,22 +2,10 @@ import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-import {DESTINATIONS, EVENT_TYPES, OFFERS, DESTINATIONS_DESCRIPTIONS} from "../utils/events.js";
+import {BLANK_EVENT, DESTINATIONS, EVENT_TYPES, OFFERS, DESTINATIONS_DESCRIPTIONS} from "../utils/events.js";
 import SmartView from "./smart.js";
 
 const REGEX_PRICE = /^\d*$/;
-
-const BLANK_EVENT = {
-  destination: ``,
-  description: ``,
-  photos: ``,
-  eventType: ``,
-  offers: [],
-  startTime: new Date(),
-  finishTime: new Date(),
-  price: 0,
-  isFavorite: false
-};
 
 const createEventTypeTemplate = (eventType) => {
   return EVENT_TYPES.map((eventTypeItem) => `<div class="event__type-item">
@@ -135,7 +123,7 @@ export default class EditEventFormView extends SmartView {
     this._isNewEvent = isNewEvent;
 
     this._startTimePicker = null;
-    this._finishTimepicker = null;
+    this._finishTimePicker = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._deleteEventClickHandler = this._deleteEventClickHandler.bind(this);
@@ -154,6 +142,13 @@ export default class EditEventFormView extends SmartView {
 
   getTemplate() {
     return createEditEventFormTemplate(this._data, this._isNewEvent);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    this._destroyDatepicker(this._startTimePicker);
+    this._destroyDatepicker(this._finishTimePicker);
   }
 
   _destroyDatepicker(datepicker) {
@@ -196,7 +191,11 @@ export default class EditEventFormView extends SmartView {
     this._setInnerHandlers();
     this._setDatepicker();
     this.setFormSubmitHandler(this._callback.submit);
-    this.setRollupButtonClickHandler(this._callback.rollupButtonClick);
+
+    if (!this._isNewEvent) {
+      this.setRollupButtonClickHandler(this._callback.rollupButtonClick);
+    }
+
     this.setDeleteEventClickHandler(this._callback.deleteEvent);
   }
 
@@ -263,7 +262,7 @@ export default class EditEventFormView extends SmartView {
     evt.target.reportValidity();
 
     this.updateData({
-      price: evt.target.value
+      price: parseInt(evt.target.value, 10)
     }, true);
 
   }

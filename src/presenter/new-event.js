@@ -1,24 +1,14 @@
 import EditEventFormView from "../view/edit-event-form.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {ESC_KEY, generateId} from "../utils/common.js";
+import {BLANK_EVENT} from "../utils/events.js";
 import {UserAction, UpdateType} from "../const.js";
-
-const BLANK_EVENT = {
-  destination: ``,
-  description: ``,
-  photos: ``,
-  eventType: ``,
-  offers: [],
-  startTime: new Date(),
-  finishTime: new Date(),
-  price: 0,
-  isFavorite: false
-};
 
 export default class NewEventPresenter {
   constructor(eventsListContainer, changeData) {
     this._eventsListContainer = eventsListContainer;
     this._changeData = changeData;
+    this._destroyCallback = null;
 
     this._editEventComponent = null;
 
@@ -27,7 +17,8 @@ export default class NewEventPresenter {
     this._onFormEscPressHandler = this._onFormEscPressHandler.bind(this);
   }
 
-  init() {
+  init(callback) {
+    this._destroyCallback = callback;
     if (this._editEventComponent !== null) {
       return;
     }
@@ -43,6 +34,10 @@ export default class NewEventPresenter {
   destroy() {
     if (this._editEventComponent === null) {
       return;
+    }
+
+    if (this._destroyCallback !== null) {
+      this._destroyCallback();
     }
 
     remove(this._editEventComponent);

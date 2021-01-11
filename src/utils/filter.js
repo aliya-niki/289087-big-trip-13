@@ -9,7 +9,7 @@ export const isFutureEvent = (startTime) => {
   return startTime && (dayjs(startTime).isAfter(dayjs(), `D`) || dayjs(startTime).isSame(dayjs(), `D`));
 };
 
-export const filter = {
+export const applyFilter = {
   [FilterType.EVERYTHING]: (events) => events,
   [FilterType.PAST]: (events) => events.filter((event) => isPastEvent(event.finishTime)),
   [FilterType.FUTURE]: (events) => events.filter((event) => isFutureEvent(event.startTime))

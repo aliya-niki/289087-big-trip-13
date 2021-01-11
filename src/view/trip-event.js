@@ -1,4 +1,5 @@
 import flatpickr from "flatpickr";
+import dayjs from "dayjs";
 import AbstractView from "./abstract.js";
 
 const MIN_IN_DAY = 1440;
@@ -15,13 +16,15 @@ const createOfferTemplate = (offers) => {
 };
 
 const createTripEventTemplate = (event) => {
-  const {destination, eventType, offers, startTime, finishTime, duration, price, isFavorite} = event;
+  const {destination, eventType, offers, startTime, finishTime, price, isFavorite} = event;
+
+  const duration = dayjs(finishTime).diff(startTime, `minute`);
 
   const durationFormat = (durationInMin) => {
     let days = Math.floor(durationInMin / MIN_IN_DAY);
     let hours = Math.floor((durationInMin - days * MIN_IN_DAY) / MIN_IN_HOUR);
     let minutes = durationInMin - days * MIN_IN_DAY - hours * MIN_IN_HOUR;
-    return `${days ? days + `D ` : ``} ${hours ? hours + `H ` : ``} ${minutes ? minutes + `M` : `00M`}`;
+    return `${days ? String(days).padStart(2, `0`) + `D ` : ``} ${hours ? String(hours).padStart(2, `0`) + `H ` : ``} ${String(minutes).padStart(2, `0`) + `M`}`;
   };
 
   const favoriteActive = isFavorite ? `event__favorite-btn--active` : ``;
