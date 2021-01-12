@@ -17,13 +17,21 @@ export const FilterType = {
 };
 
 export const SortType = {
-  DEFAULT: `default`,
+  DEFAULT: `day`,
+  EVENT: `event`,
+  TIME: `time`,
   PRICE: `price`,
-  TIME: `time`
+  OFFERS: `offers`
 };
 
 export const MenuItem = {
   TABLE: `Table`,
   STATS: `Stats`
+};
+
+export const StatisticsChartType = {
+  MONEY: `money`,
+  TYPE: `transport`,
+  TIME: `time`
 };
 

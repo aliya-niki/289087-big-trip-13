@@ -36,7 +36,7 @@ export default class NewEventPresenter {
       return;
     }
 
-    if (this._destroyCallback !== null) {
+    if (this._destroyCallback) {
       this._destroyCallback();
     }
 

@@ -5,7 +5,7 @@ export const BLANK_EVENT = {
   destination: ``,
   description: ``,
   photos: ``,
-  eventType: ``,
+  eventType: `flight`,
   offers: [],
   startTime: new Date(),
   finishTime: new Date(),

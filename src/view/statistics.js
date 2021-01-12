@@ -3,6 +3,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from "./smart.js";
 import {getMoney, getEventsNumber, getTimeSpend} from "../utils/statistics.js";
 import {EVENT_TYPES} from "../utils/events.js";
+import {StatisticsChartType} from "../const.js";
 
 const BAR_HEIGHT = 55;
 
@@ -76,18 +77,9 @@ const chartTemplate = (chartLabels, chartTitle, chartValueFormatter, chartData) 
 const createStatisticsTemplate = () => {
   return `<section class="statistics">
     <h2 class="visually-hidden">Trip statistics</h2>
-
-    <div class="statistics__item statistics__item--money">
-      <canvas class="statistics__chart  statistics__chart--money" width="900" height ="${BAR_HEIGHT * EVENT_TYPES.length}"></canvas>
-    </div>
-
-    <div class="statistics__item statistics__item--transport">
-      <canvas class="statistics__chart  statistics__chart--transport" width="900" height ="${BAR_HEIGHT * EVENT_TYPES.length}"></canvas>
-    </div>
-
-    <div class="statistics__item statistics__item--time-spend">
-      <canvas class="statistics__chart  statistics__chart--time" width="900" height ="${BAR_HEIGHT * EVENT_TYPES.length}"></canvas>
-    </div>
+    ${Object.values(StatisticsChartType).map((chartType) => `<div class="statistics__item statistics__item--${chartType}">
+      <canvas class="statistics__chart  statistics__chart--${chartType}" width="900" height ="${BAR_HEIGHT * EVENT_TYPES.length}"></canvas>
+    </div>`).join(``)}
   </section>`;
 };
 

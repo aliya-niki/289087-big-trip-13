@@ -43,8 +43,8 @@ export default class TripPresenter {
 
   destroy() {
     this._clearTripBoard(true);
-
     remove(this._eventsListComponent);
+
     this._eventsModel.removeObserver(this._handleModel);
     this._filtersModel.removeObserver(this._handleModel);
   }

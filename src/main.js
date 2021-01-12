@@ -37,7 +37,7 @@ const handleCreateEventFormClose = () => {
   tripMainElement.querySelector(`.trip-main__event-add-btn`).disabled = false;
 };
 
-tripMainElement.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
+const newEventClickHandler = (evt) => {
   evt.preventDefault();
   tripPresenter.createEvent(handleCreateEventFormClose);
   tripMainElement.querySelector(`.trip-main__event-add-btn`).disabled = true;
@@ -47,12 +47,11 @@ tripMainElement.querySelector(`.trip-main__event-add-btn`).addEventListener(`cli
     menuComponent.getElement().querySelector(`.trip-tabs__btn--active`).classList.remove(`trip-tabs__btn--active`);
     menuComponent.getElement().querySelector(`[data-value="${MenuItem.TABLE}"]`).classList.add(`trip-tabs__btn--active`);
   }
-});
+};
+
+tripMainElement.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, newEventClickHandler);
 
 const handleMenuClick = (menuItem) => {
-  menuComponent.getElement().querySelector(`.trip-tabs__btn--active`).classList.remove(`trip-tabs__btn--active`);
-  menuComponent.getElement().querySelector(`[data-value="${menuItem}"]`).classList.add(`trip-tabs__btn--active`);
-
   switch (menuItem) {
     case MenuItem.TABLE:
       tripPresenter.init();
