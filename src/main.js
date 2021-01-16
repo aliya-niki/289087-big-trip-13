@@ -1,35 +1,29 @@
-import {generateEvent} from "./mock/event.js";
-import {sortEventsByDate} from "./utils/events.js";
 import {render, RenderPosition, remove} from "./utils/render.js";
-import {MenuItem} from "./const.js";
+import {MenuItem, UpdateType} from "./const.js";
 import EventsModel from "./model/events.js";
 import FiltersModel from "./model/filters.js";
+import OffersModel from "./model/offers.js";
+import DestinationsModel from "./model/destinations.js";
 import TripPresenter from "./presenter/trip.js";
 import FiltersPresenter from "./presenter/filters.js";
 import MenuView from "./view/menu.js";
 import StatisticsView from "./view/statistics.js";
+import Api from "./api.js";
 
-const EVENTS_NUMBER = 15;
+const AUTHORIZATION = `Basic fr33d3li78n43bn19`;
+const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 
-const events = new Array(EVENTS_NUMBER).fill().map(generateEvent).sort(sortEventsByDate);
-
+const api = new Api(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
-eventsModel.setEvents(events);
-
 const filtersModel = new FiltersModel();
+const offersModel = new OffersModel();
+const destinationsModel = new DestinationsModel();
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 
-const tripPresenter = new TripPresenter(tripMainElement, tripEventsElement, eventsModel, filtersModel);
-tripPresenter.init();
-
-const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel, eventsModel);
-filtersPresenter.init();
-
 const menuComponent = new MenuView();
-render(tripControlsElement, menuComponent, RenderPosition.AFTERBEGIN);
 
 let statisticsComponent = null;
 
@@ -65,5 +59,26 @@ const handleMenuClick = (menuItem) => {
   }
 };
 
-menuComponent.setMenuClickHandler(handleMenuClick);
+const tripPresenter = new TripPresenter(tripMainElement, tripEventsElement, eventsModel, filtersModel, destinationsModel, offersModel, api);
+const filtersPresenter = new FiltersPresenter(tripControlsElement, filtersModel, eventsModel);
+tripPresenter.init();
+filtersPresenter.init();
+
+Promise.all([
+  api.getOffers(),
+  api.getDestinations(),
+  api.getEvents()
+])
+  .then(([offers, destinations, events]) => {
+    offersModel.setOffers(offers);
+    destinationsModel.setDestinations(destinations);
+    eventsModel.setEvents(UpdateType.INIT, events);
+    render(tripControlsElement, menuComponent, RenderPosition.AFTERBEGIN);
+    menuComponent.setMenuClickHandler(handleMenuClick);
+  })
+  .catch(() => {
+    eventsModel.setEvents(UpdateType.INIT, []);
+    render(tripControlsElement, menuComponent, RenderPosition.AFTERBEGIN);
+    menuComponent.setMenuClickHandler(handleMenuClick);
+  });
 

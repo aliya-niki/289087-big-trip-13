@@ -2,25 +2,31 @@ import SortView from "../view/sort.js";
 import EventsListView from "../view/events-list.js";
 import ListEmptyView from "../view/list-empty.js";
 import TripInfoView from "../view/trip-info.js";
-import EventPresenter from "./event.js";
+import LoadingView from "../view/loading.js";
+import EventPresenter, {State as EventPresenterViewState} from "./event.js";
 import NewEventPresenter from "./new-event.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {applyFilter} from "../utils/filter.js";
 import {UserAction, UpdateType, FilterType, SortType} from "../const.js";
-import {sortEventsByDate, sortEventsByPrice, sortEventsByTime} from "../utils/events.js";
+import {sortEventsByDate, sortEventsByPrice, sortEventsByTime} from "../utils/sort.js";
 
 export default class TripPresenter {
-  constructor(tripMainContainer, tripEventsContainer, eventsModel, filtersModel) {
+  constructor(tripMainContainer, tripEventsContainer, eventsModel, filtersModel, destinationsModel, offersModel, api) {
     this._tripMainContainer = tripMainContainer;
     this._tripEventsContainer = tripEventsContainer;
     this._eventsModel = eventsModel;
     this._filtersModel = filtersModel;
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
+    this._api = api;
+    this._isLoading = true;
     this._currentSortType = SortType.DEFAULT;
 
-    this._eventsListComponent = new EventsListView();
-    this._sortComponent = null;
     this._tripInfoComponent = null;
     this._listEmptyComponent = new ListEmptyView();
+    this._loadingComponent = new LoadingView();
+    this._eventsListComponent = new EventsListView();
+    this._sortComponent = null;
 
     this._eventPresenter = {};
 
@@ -29,16 +35,20 @@ export default class TripPresenter {
     this._handleModel = this._handleModel.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._newEventPresenter = new NewEventPresenter(this._eventsListComponent, this._handleView);
+    this._newEventPresenter = new NewEventPresenter(this._eventsListComponent, this._offersModel, this._destinationsModel, this._handleView);
   }
 
   init() {
-    this._renderTripInfo(this._eventsModel.getEvents());
+    if (!this._isLoading) {
+      this._renderTripInfo(this._eventsModel.getEvents());
+    }
     this._renderEventsList();
     this._renderTrip();
 
     this._eventsModel.addObserver(this._handleModel);
     this._filtersModel.addObserver(this._handleModel);
+    this._destinationsModel.addObserver(this._handleModel);
+    this._offersModel.addObserver(this._handleModel);
   }
 
   destroy() {
@@ -47,6 +57,8 @@ export default class TripPresenter {
 
     this._eventsModel.removeObserver(this._handleModel);
     this._filtersModel.removeObserver(this._handleModel);
+    this._destinationsModel.removeObserver(this._handleModel);
+    this._offersModel.removeObserver(this._handleModel);
   }
 
 
@@ -78,13 +90,37 @@ export default class TripPresenter {
   _handleView(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.updateEvent(updateType, update);
+        this._eventPresenter[update.id].setViewState(EventPresenterViewState.SAVING);
+
+        this._api.updateEvent(update)
+          .then((response) => {
+            this._eventsModel.updateEvent(updateType, response);
+          })
+          .catch(() => {
+            this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_EVENT:
-        this._eventsModel.addEvent(updateType, update);
+        this._newEventPresenter.setSaving();
+
+        this._api.addEvent(update)
+          .then((response) => {
+            this._eventsModel.addEvent(updateType, response);
+          })
+          .catch(() => {
+            this._newEventPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_EVENT:
-        this._eventsModel.deleteEvent(updateType, update);
+        this._eventPresenter[update.id].setViewState(EventPresenterViewState.DELETING);
+
+        this._api.deleteEvent(update)
+          .then(() => {
+            this._eventsModel.deleteEvent(updateType, update);
+          })
+          .catch(() => {
+            this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
+          });
         break;
     }
   }
@@ -104,6 +140,12 @@ export default class TripPresenter {
         this._renderTrip();
         this._renderTripInfo();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderTrip();
+        this._renderTripInfo();
+        break;
     }
   }
 
@@ -116,6 +158,7 @@ export default class TripPresenter {
 
     remove(this._sortComponent);
     remove(this._listEmptyComponent);
+    remove(this._loadingComponent);
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
@@ -151,7 +194,7 @@ export default class TripPresenter {
   }
 
   _renderEvent(eventElement) {
-    const eventPresenter = new EventPresenter(this._eventsListComponent, this._handleView, this._handleModeChange);
+    const eventPresenter = new EventPresenter(this._eventsListComponent, this._offersModel, this._destinationsModel, this._handleView, this._handleModeChange);
     eventPresenter.init(eventElement);
     this._eventPresenter[eventElement.id] = eventPresenter;
   }
@@ -163,6 +206,11 @@ export default class TripPresenter {
   _renderListEmpty() {
     render(this._tripEventsContainer, this._listEmptyComponent, RenderPosition.BEFOREEND);
   }
+
+  _renderLoading() {
+    render(this._tripEventsContainer, this._loadingComponent, RenderPosition.BEFOREEND);
+  }
+
 
   _renderTripInfo() {
     if (this._tripInfoComponent !== null) {
@@ -179,7 +227,13 @@ export default class TripPresenter {
   }
 
   _renderTrip() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     if (!this._eventsModel.getEvents().length) {
+
       this._renderListEmpty();
       return;
     }

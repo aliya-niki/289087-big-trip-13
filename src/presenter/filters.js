@@ -16,6 +16,7 @@ export default class FiltersPresenter {
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
 
     this._filtersModel.addObserver(this._handleModelEvent);
+    this._eventsModel.addObserver(this._handleModelEvent);
   }
 
   init() {

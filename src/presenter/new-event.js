@@ -1,12 +1,14 @@
 import EditEventFormView from "../view/edit-event-form.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {ESC_KEY, generateId} from "../utils/common.js";
+import {ESC_KEY} from "../utils/common.js";
 import {BLANK_EVENT} from "../utils/events.js";
 import {UserAction, UpdateType} from "../const.js";
 
 export default class NewEventPresenter {
-  constructor(eventsListContainer, changeData) {
+  constructor(eventsListContainer, offersModel, destinationsModel, changeData) {
     this._eventsListContainer = eventsListContainer;
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
     this._changeData = changeData;
     this._destroyCallback = null;
 
@@ -22,7 +24,7 @@ export default class NewEventPresenter {
     if (this._editEventComponent !== null) {
       return;
     }
-    this._editEventComponent = new EditEventFormView(BLANK_EVENT, true);
+    this._editEventComponent = new EditEventFormView(BLANK_EVENT, this._offersModel.getAllOffers(), this._destinationsModel.getDestinations(), true);
     this._editEventComponent.setDeleteEventClickHandler(this._handleDeleteClick);
     this._editEventComponent.setFormSubmitHandler(this._handleFormSubmit);
 
@@ -46,6 +48,25 @@ export default class NewEventPresenter {
     document.removeEventListener(`keydown`, this._onFormEscPressHandler);
   }
 
+  setSaving() {
+    this._editEventComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._editEventComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this._editEventComponent.shake(resetFormState);
+  }
+
   _onFormEscPressHandler(evt) {
     if (evt.key === ESC_KEY) {
       evt.preventDefault();
@@ -61,7 +82,7 @@ export default class NewEventPresenter {
     this._changeData(
         UserAction.ADD_EVENT,
         UpdateType.MINOR,
-        Object.assign({id: generateId()}, event)
+        event
     );
     this.destroy();
   }

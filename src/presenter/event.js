@@ -9,16 +9,24 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
 export default class EventPresenter {
-  constructor(eventsListContainer, changeData, changeMode) {
+  constructor(eventsListContainer, offersModel, destinationsModel, changeData, changeMode) {
     this._eventsListContainer = eventsListContainer;
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._mode = Mode.DEFAULT;
     this._eventComponent = null;
     this._editEventComponent = null;
 
-    this._handleClick = this._handleClick.bind(this);
+    this._handleEditClick = this._handleEditClick.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -33,20 +41,17 @@ export default class EventPresenter {
     const prevEditEventComponent = this._editEventComponent;
 
     this._eventComponent = new TripEventView(event);
-    this._editEventComponent = new EditEventFormView(event);
-    this._eventComponent.setClickHandler(this._handleClick);
+    this._editEventComponent = new EditEventFormView(event, this._offersModel.getAllOffers(), this._destinationsModel.getDestinations());
+    this._eventComponent.setEditClickHandler(this._handleEditClick);
+    this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+
     this._editEventComponent.setDeleteEventClickHandler(this._handleDeleteClick);
-
-
     this._editEventComponent.setFormSubmitHandler(this._handleFormSubmit);
-
     if (!this._editEventComponent._isNewEvent) {
       this._editEventComponent.setRollupButtonClickHandler(this._handleRollupButtonClick);
     }
 
-    this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-
-    if (prevEventComponent === null || prevEditEventComponent === null) {
+    if (prevEventComponent === null) {
       render(this._eventsListContainer, this._eventComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -56,17 +61,52 @@ export default class EventPresenter {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._editEventComponent, prevEditEventComponent);
+      replace(this._eventComponent, prevEditEventComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevEventComponent);
     remove(prevEditEventComponent);
   }
 
+  destroy() {
+    remove(this._eventComponent);
+    remove(this._editEventComponent);
+  }
+
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._editEventComponent.reset(this._event);
       this._replaceFormToCard();
+    }
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._editEventComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._editEventComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._editEventComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._eventComponent.shake(resetFormState);
+        this._editEventComponent.shake(resetFormState);
+        break;
     }
   }
 
@@ -91,7 +131,7 @@ export default class EventPresenter {
     }
   }
 
-  _handleClick() {
+  _handleEditClick() {
     this._replaceCardToForm();
   }
 
@@ -109,7 +149,6 @@ export default class EventPresenter {
         UpdateType.MINOR,
         event
     );
-    this._replaceFormToCard();
   }
 
   _handleRollupButtonClick() {
@@ -120,7 +159,7 @@ export default class EventPresenter {
   _handleFavoriteClick() {
     this._changeData(
         UserAction.UPDATE_EVENT,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._event,
@@ -130,11 +169,5 @@ export default class EventPresenter {
         )
     );
   }
-
-  destroy() {
-    remove(this._eventComponent);
-    remove(this._editEventComponent);
-  }
 }
-
 

@@ -1,11 +1,10 @@
-import dayjs from "dayjs";
 import {getRandomInteger} from "../utils/common.js";
 
 export const BLANK_EVENT = {
   destination: ``,
   description: ``,
   photos: ``,
-  eventType: `flight`,
+  type: `Flight`,
   offers: [],
   startTime: new Date(),
   finishTime: new Date(),
@@ -116,17 +115,4 @@ const generateDestinationsDescriptions = () => {
   return destinationsDescriptions;
 };
 
-
 export const DESTINATIONS_DESCRIPTIONS = generateDestinationsDescriptions();
-
-export const sortEventsByDate = (a, b) => {
-  return dayjs(a.startTime).diff(b.startTime);
-};
-
-export const sortEventsByTime = (a, b) => {
-  return dayjs(b.finishTime).diff(b.startTime, `minute`) - dayjs(a.finishTime).diff(a.startTime, `minute`);
-};
-
-export const sortEventsByPrice = (a, b) => {
-  return b.price - a.price;
-};
