@@ -36,3 +36,9 @@ export const StatisticsChartType = {
   TIME: `time`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+

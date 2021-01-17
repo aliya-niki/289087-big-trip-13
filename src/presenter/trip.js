@@ -3,11 +3,11 @@ import EventsListView from "../view/events-list.js";
 import ListEmptyView from "../view/list-empty.js";
 import TripInfoView from "../view/trip-info.js";
 import LoadingView from "../view/loading.js";
-import EventPresenter, {State as EventPresenterViewState} from "./event.js";
+import EventPresenter from "./event.js";
 import NewEventPresenter from "./new-event.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {applyFilter} from "../utils/filter.js";
-import {UserAction, UpdateType, FilterType, SortType} from "../const.js";
+import {UserAction, UpdateType, FilterType, SortType, State} from "../const.js";
 import {sortEventsByDate, sortEventsByPrice, sortEventsByTime} from "../utils/sort.js";
 
 export default class TripPresenter {
@@ -90,14 +90,14 @@ export default class TripPresenter {
   _handleView(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventPresenter[update.id].setViewState(EventPresenterViewState.SAVING);
+        this._eventPresenter[update.id].setViewState(State.SAVING);
 
         this._api.updateEvent(update)
           .then((response) => {
             this._eventsModel.updateEvent(updateType, response);
           })
           .catch(() => {
-            this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
+            this._eventPresenter[update.id].setViewState(State.ABORTING);
           });
         break;
       case UserAction.ADD_EVENT:
@@ -112,14 +112,14 @@ export default class TripPresenter {
           });
         break;
       case UserAction.DELETE_EVENT:
-        this._eventPresenter[update.id].setViewState(EventPresenterViewState.DELETING);
+        this._eventPresenter[update.id].setViewState(State.DELETING);
 
         this._api.deleteEvent(update)
           .then(() => {
             this._eventsModel.deleteEvent(updateType, update);
           })
           .catch(() => {
-            this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
+            this._eventPresenter[update.id].setViewState(State.ABORTING);
           });
         break;
     }

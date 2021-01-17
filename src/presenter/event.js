@@ -2,17 +2,11 @@ import TripEventView from "../view/trip-event.js";
 import EditEventFormView from "../view/edit-event-form.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {ESC_KEY} from "../utils/common.js";
-import {UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType, State} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
   EDITING: `EDITING`
-};
-
-export const State = {
-  SAVING: `SAVING`,
-  DELETING: `DELETING`,
-  ABORTING: `ABORTING`
 };
 
 export default class EventPresenter {
