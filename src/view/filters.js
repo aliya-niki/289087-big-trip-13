@@ -1,11 +1,7 @@
 import AbstractView from "./abstract.js";
+import {capitalizeFirstLetter} from "../utils/common.js";
 
 const createFiltersTemplate = (filters, activeFilter) => {
-  const capitalizeFirstLetter = (str) => {
-    const capitalized = str.charAt(0).toUpperCase() + str.slice(1);
-    return capitalized;
-  };
-
   return `<form class="trip-filters" action="#" method="get">
     ${filters.map(({type, number}) => `<div class="trip-filters__filter">
       <input id="filter-${type}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type}" ${type === activeFilter ? `checked` : ``} ${number === 0 ? `disabled` : ``}>

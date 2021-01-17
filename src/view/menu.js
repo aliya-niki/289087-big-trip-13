@@ -5,7 +5,7 @@ const createMenuTemplate = () => {
   const defaultActiveTab = MenuItem.TABLE;
   return `<nav class="trip-controls__trip-tabs  trip-tabs">
     ${Object.values(MenuItem).map((menuItem) =>
-    `<a class="trip-tabs__btn  ${menuItem === defaultActiveTab ? `trip-tabs__btn--active` : ``}" href="#" data-value="${menuItem}">${menuItem}</a>`
+    `<a class="trip-tabs__btn  ${menuItem === defaultActiveTab ? `trip-tabs__btn--active` : ``}" href="#${menuItem.toLowerCase()}" data-value="${menuItem}">${menuItem}</a>`
   ).join(``)}
   </nav>`;
 };

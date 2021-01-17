@@ -74,11 +74,11 @@ const chartTemplate = (chartLabels, chartTitle, chartValueFormatter, chartData) 
   };
 };
 
-const createStatisticsTemplate = () => {
-  return `<section class="statistics">
+const createStatisticsTemplate = (eventTypes) => {
+  return `<section class="statistics" id="stats">
     <h2 class="visually-hidden">Trip statistics</h2>
     ${Object.values(StatisticsChartType).map((chartType) => `<div class="statistics__item statistics__item--${chartType}">
-      <canvas class="statistics__chart  statistics__chart--${chartType}" width="900" height ="${BAR_HEIGHT * EVENT_TYPES.length}"></canvas>
+      <canvas class="statistics__chart  statistics__chart--${chartType}" width="900" height ="${BAR_HEIGHT * eventTypes.length}"></canvas>
     </div>`).join(``)}
   </section>`;
 };
@@ -93,6 +93,7 @@ export default class StatisticsView extends SmartView {
     this._typeChart = null;
     this._timeChart = null;
 
+    this._existedEventTypes = EVENT_TYPES.filter((type) => getEventsNumber(this._data, type) !== 0);
     this._setCharts();
   }
 
@@ -107,7 +108,7 @@ export default class StatisticsView extends SmartView {
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._data);
+    return createStatisticsTemplate(this._existedEventTypes);
   }
 
   restoreHandlers() {
@@ -125,10 +126,10 @@ export default class StatisticsView extends SmartView {
     const typeCtx = this.getElement().querySelector(`.statistics__chart--transport`);
     const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
 
-    const labels = EVENT_TYPES.map((type) => type.toUpperCase());
-    const moneyChartData = EVENT_TYPES.map((type) => getMoney(this._data, type));
-    const typeChartData = EVENT_TYPES.map((type) => getEventsNumber(this._data, type));
-    const timeSpendChartData = EVENT_TYPES.map((type) => getTimeSpend(this._data, type));
+    const labels = this._existedEventTypes.map((type) => type.toUpperCase());
+    const moneyChartData = this._existedEventTypes.map((type) => getMoney(this._data, type));
+    const typeChartData = this._existedEventTypes.map((type) => getEventsNumber(this._data, type));
+    const timeSpendChartData = this._existedEventTypes.map((type) => getTimeSpend(this._data, type));
 
     this._moneyChart = new Chart(moneyCtx, chartTemplate(labels, `MONEY`, (val) => `€ ${val}`, moneyChartData));
     this._typeChart = new Chart(typeCtx, chartTemplate(labels, `TYPE`, (val) => `${val}x`, typeChartData));

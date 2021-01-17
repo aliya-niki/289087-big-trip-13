@@ -1,46 +1,43 @@
-import flatpickr from "flatpickr";
 import dayjs from "dayjs";
 import AbstractView from "./abstract.js";
 
 const MIN_IN_DAY = 1440;
 const MIN_IN_HOUR = 60;
 
+const durationFormat = (durationInMin) => {
+  let days = Math.floor(durationInMin / MIN_IN_DAY);
+  let hours = Math.floor((durationInMin - days * MIN_IN_DAY) / MIN_IN_HOUR);
+  let minutes = durationInMin - days * MIN_IN_DAY - hours * MIN_IN_HOUR;
+  return `${days ? String(days).padStart(2, `0`) + `D ` : ``} ${hours ? String(hours).padStart(2, `0`) + `H ` : ``} ${String(minutes).padStart(2, `0`) + `M`}`;
+};
+
 const createOfferTemplate = (offers) => {
-  return offers.map((offer) => {
-    return offer.isChecked ? `<li class="event__offer">
-      <span class="event__offer-title">${offer.description}</span>
+  return offers.map((offer) => `<li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${offer.price}</span>
-    </li>` : ``;
-  }).join(``);
+    </li>`).join(``);
 };
 
 const createTripEventTemplate = (event) => {
-  const {destination, eventType, offers, startTime, finishTime, price, isFavorite} = event;
+  const {destination, type, offers, startTime, finishTime, price, isFavorite} = event;
 
   const duration = dayjs(finishTime).diff(startTime, `minute`);
-
-  const durationFormat = (durationInMin) => {
-    let days = Math.floor(durationInMin / MIN_IN_DAY);
-    let hours = Math.floor((durationInMin - days * MIN_IN_DAY) / MIN_IN_HOUR);
-    let minutes = durationInMin - days * MIN_IN_DAY - hours * MIN_IN_HOUR;
-    return `${days ? String(days).padStart(2, `0`) + `D ` : ``} ${hours ? String(hours).padStart(2, `0`) + `H ` : ``} ${String(minutes).padStart(2, `0`) + `M`}`;
-  };
 
   const favoriteActive = isFavorite ? `event__favorite-btn--active` : ``;
 
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${flatpickr.formatDate(startTime, `Y-m-d`)}">${flatpickr.formatDate(startTime, `M d`)}</time>
+      <time class="event__date" datetime="${dayjs(startTime).format(`YYYY-MM-DD`)}">${dayjs(startTime).format(`MMM DD`)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType.toLowerCase()}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${eventType} ${destination}</h3>
+      <h3 class="event__title">${type} ${destination}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${flatpickr.formatDate(startTime, `Y-m-dTH:i`)}">${flatpickr.formatDate(startTime, `H:i`)}</time>
+          <time class="event__start-time" datetime="${dayjs(startTime)}">${dayjs(startTime).format(`HH:mm`)}</time>
           &mdash;
-          <time class="event__end-time" datetime="${flatpickr.formatDate(finishTime, `Y-m-dTH:i`)}">${flatpickr.formatDate(finishTime, `H:i`)}</time>
+          <time class="event__end-time" datetime="${dayjs(finishTime)}">${dayjs(finishTime).format(`HH:mm`)}</time>
         </p>
         <p class="event__duration">${durationFormat(duration)}</p>
       </div>
@@ -68,7 +65,8 @@ export default class TripEventView extends AbstractView {
   constructor(event) {
     super();
     this._event = event;
-    this._clickHandler = this._clickHandler.bind(this);
+
+    this._editClickHandler = this._editClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
@@ -76,7 +74,7 @@ export default class TripEventView extends AbstractView {
     return createTripEventTemplate(this._event);
   }
 
-  _clickHandler(evt) {
+  _editClickHandler(evt) {
     evt.preventDefault();
     this._callback.click();
   }
@@ -86,9 +84,9 @@ export default class TripEventView extends AbstractView {
     this._callback.favoriteClick();
   }
 
-  setClickHandler(callback) {
+  setEditClickHandler(callback) {
     this._callback.click = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._clickHandler);
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
   }
 
   setFavoriteClickHandler(callback) {

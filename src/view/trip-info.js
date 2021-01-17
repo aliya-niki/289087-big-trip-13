@@ -1,4 +1,4 @@
-import flatpickr from "flatpickr";
+import dayjs from "dayjs";
 import AbstractView from "./abstract.js";
 
 const renderTripDestinations = (events) => {
@@ -29,8 +29,8 @@ const renderTripDestinations = (events) => {
 const createTripInfoTemplate = (events) => {
   const tripStartDate = events[0].startTime;
   const tripFinishDate = events[events.length - 1].finishTime;
-  const startDate = flatpickr.formatDate(tripStartDate, `M d`);
-  const finishDate = flatpickr.formatDate(tripFinishDate, `M d`);
+  const startDate = dayjs(tripStartDate).format(`MMM DD`);
+  const finishDate = dayjs(tripFinishDate).format(`MMM DD`);
 
   const tripDestinations = new Set();
   events.forEach((event) => tripDestinations.add(event.destination));
