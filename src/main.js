@@ -1,7 +1,7 @@
 import {render, RenderPosition, remove} from "./utils/render.js";
 import {MenuItem, UpdateType} from "./const.js";
 import {isOnline} from "./utils/common.js";
-import {toast} from "./utils/toast/toast.js";
+import {toast} from "./utils/toast.js";
 import EventsModel from "./model/events.js";
 import FiltersModel from "./model/filters.js";
 import OffersModel from "./model/offers.js";
@@ -104,7 +104,7 @@ Promise.all([
   });
 
 window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`./service-worker.js`);
+  navigator.serviceWorker.register(`/service-worker.js`);
 });
 
 window.addEventListener(`online`, () => {

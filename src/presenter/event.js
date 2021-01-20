@@ -2,7 +2,7 @@ import TripEventView from "../view/trip-event.js";
 import EditEventFormView from "../view/edit-event-form.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {ESC_KEY, isOnline} from "../utils/common.js";
-import {toast} from "../utils/toast/toast.js";
+import {toast} from "../utils/toast.js";
 import {UserAction, UpdateType, State} from "../const.js";
 
 const Mode = {

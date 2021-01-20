@@ -3,7 +3,7 @@ import {isOnline} from "../utils/common.js";
 
 const getSyncedEvents = (items) => {
   return items.filter(({success}) => success)
-    .map(({payload}) => payload.event);
+    .map(({payload}) => payload.point);
 };
 
 const createStoreStructure = (items) => {
