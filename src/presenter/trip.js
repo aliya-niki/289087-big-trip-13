@@ -61,7 +61,6 @@ export default class TripPresenter {
     this._offersModel.removeObserver(this._handleModel);
   }
 
-
   createEvent(callback) {
     Object
       .values(this._eventPresenter)
@@ -211,8 +210,11 @@ export default class TripPresenter {
     render(this._tripEventsContainer, this._loadingComponent, RenderPosition.BEFOREEND);
   }
 
-
   _renderTripInfo() {
+    if (!this._eventsModel.getEvents().length) {
+      return;
+    }
+
     if (this._tripInfoComponent !== null) {
       remove(this._tripInfoComponent);
       this._tripInfoComponent = null;
@@ -233,7 +235,6 @@ export default class TripPresenter {
     }
 
     if (!this._eventsModel.getEvents().length) {
-
       this._renderListEmpty();
       return;
     }

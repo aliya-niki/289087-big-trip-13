@@ -1004,6 +1004,8 @@ main {
   background-color: #fee;
   color: #900;}
 
+.no-after::after{
+  display: none;}
 
 @keyframes shake {
   0%,

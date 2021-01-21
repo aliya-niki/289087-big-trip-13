@@ -99,7 +99,6 @@ export default class EventPresenter {
         });
         break;
       case State.ABORTING:
-        this._eventComponent.shake(resetFormState);
         this._editEventComponent.shake(resetFormState);
         break;
     }
@@ -129,7 +128,6 @@ export default class EventPresenter {
   _handleEditClick() {
     if (!isOnline()) {
       toast(`You can't edit event offline`);
-      this.setViewState(State.ABORTING);
       return;
     }
 

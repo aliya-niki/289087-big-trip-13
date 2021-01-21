@@ -14,7 +14,7 @@ import Api from "./api/api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
-const AUTHORIZATION = `Basic fr33d3li78n43bn19`;
+const AUTHORIZATION = `Basic fr33d3li78n43bn19fr`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 const EVENTS_STORE_PREFIX = `bigtrip-localstorage`;
 const OFFERS_STORE_PREFIX = `bigtrip-offers-localstorage`;
@@ -71,9 +71,11 @@ const handleMenuClick = (menuItem) => {
     case MenuItem.TABLE:
       tripPresenter.init();
       remove(statisticsComponent);
+      document.querySelector(`.page-body__page-main .page-body__container`).classList.remove(`no-after`);
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
+      document.querySelector(`.page-body__page-main .page-body__container`).classList.add(`no-after`);
       statisticsComponent = new StatisticsView(eventsModel.getEvents());
       render(tripEventsElement, statisticsComponent, RenderPosition.BEFOREEND);
       break;
@@ -104,7 +106,7 @@ Promise.all([
   });
 
 window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/service-worker.js`);
+  navigator.serviceWorker.register(`./service-worker.js`);
 });
 
 window.addEventListener(`online`, () => {
@@ -113,5 +115,6 @@ window.addEventListener(`online`, () => {
 });
 
 window.addEventListener(`offline`, () => {
+  toast(`OFFLINE`);
   document.title += ` [offline]`;
 });
