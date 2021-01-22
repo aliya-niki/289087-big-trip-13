@@ -980,7 +980,7 @@ main {
   margin-bottom: 78px; }
 
 .toast-container {
-  position: absolute;
+  position: fixed;
   z-index: 1000;
   top: 0;
   right: 0;
