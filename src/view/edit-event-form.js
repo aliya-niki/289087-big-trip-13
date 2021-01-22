@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
-
+import {isOnline} from "../utils/common.js";
 import {BLANK_EVENT, EVENT_TYPES} from "../utils/events.js";
 import SmartView from "./smart.js";
 
@@ -37,6 +37,9 @@ const createOffersTemplate = (offers, availableOffers, isDisabled) => {
 };
 
 const createPhotoTemplate = (photo) => {
+  if (!isOnline()) {
+    return ``;
+  }
   return `<img class="event__photo" src="${photo.src}" alt="${photo.description}"></img>`;
 };
 

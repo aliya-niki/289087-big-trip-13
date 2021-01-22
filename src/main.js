@@ -35,8 +35,9 @@ const filtersModel = new FiltersModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
 
+const bodyContainerElement = document.querySelector(`.page-body__page-main .page-body__container`);
 const tripMainElement = document.querySelector(`.trip-main`);
-const tripEventsElement = document.querySelector(`.trip-events`);
+const tripEventsElement = bodyContainerElement.querySelector(`.trip-events`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 
 const menuComponent = new MenuView();
@@ -71,11 +72,11 @@ const handleMenuClick = (menuItem) => {
     case MenuItem.TABLE:
       tripPresenter.init();
       remove(statisticsComponent);
-      document.querySelector(`.page-body__page-main .page-body__container`).classList.remove(`no-after`);
+      bodyContainerElement.classList.remove(`no-after`);
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
-      document.querySelector(`.page-body__page-main .page-body__container`).classList.add(`no-after`);
+      bodyContainerElement.classList.add(`no-after`);
       statisticsComponent = new StatisticsView(eventsModel.getEvents());
       render(tripEventsElement, statisticsComponent, RenderPosition.BEFOREEND);
       break;
