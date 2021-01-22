@@ -1,4 +1,4 @@
-import EventsModel from "./model/events.js";
+import EventsModel from "../model/events.js";
 
 const Method = {
   GET: `GET`,
@@ -63,6 +63,16 @@ export default class Api {
     });
   }
 
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then(Api.toJSON);
+  }
+
   _load({
     url,
     method = Method.GET,
@@ -82,7 +92,7 @@ export default class Api {
   static checkStatus(response) {
     if (
       response.status < SuccessHTTPStatusRange.MIN ||
-      response.status > SuccessHTTPStatusRange.MAX
+      response.status >= SuccessHTTPStatusRange.MAX
     ) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }

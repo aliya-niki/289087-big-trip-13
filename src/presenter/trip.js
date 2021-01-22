@@ -9,6 +9,7 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {applyFilter} from "../utils/filter.js";
 import {UserAction, UpdateType, FilterType, SortType, State} from "../const.js";
 import {sortEventsByDate, sortEventsByPrice, sortEventsByTime} from "../utils/sort.js";
+import {isOnline} from "../utils/common.js";
 
 export default class TripPresenter {
   constructor(tripMainContainer, tripEventsContainer, eventsModel, filtersModel, destinationsModel, offersModel, api) {
@@ -60,7 +61,6 @@ export default class TripPresenter {
     this._destinationsModel.removeObserver(this._handleModel);
     this._offersModel.removeObserver(this._handleModel);
   }
-
 
   createEvent(callback) {
     Object
@@ -129,6 +129,11 @@ export default class TripPresenter {
     switch (updateType) {
       case UpdateType.PATCH:
         this._eventPresenter[data.id].init(data);
+        if (!isOnline()) {
+          window.addEventListener(`online`, () => {
+            this._eventPresenter[data.id].init(data);
+          });
+        }
         break;
       case UpdateType.MINOR:
         this._clearTripBoard();
@@ -193,10 +198,10 @@ export default class TripPresenter {
     render(this._tripEventsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
-  _renderEvent(eventElement) {
+  _renderEvent(event) {
     const eventPresenter = new EventPresenter(this._eventsListComponent, this._offersModel, this._destinationsModel, this._handleView, this._handleModeChange);
-    eventPresenter.init(eventElement);
-    this._eventPresenter[eventElement.id] = eventPresenter;
+    eventPresenter.init(event);
+    this._eventPresenter[event.id] = eventPresenter;
   }
 
   _renderEvents(events) {
@@ -211,8 +216,11 @@ export default class TripPresenter {
     render(this._tripEventsContainer, this._loadingComponent, RenderPosition.BEFOREEND);
   }
 
-
   _renderTripInfo() {
+    if (!this._eventsModel.getEvents().length) {
+      return;
+    }
+
     if (this._tripInfoComponent !== null) {
       remove(this._tripInfoComponent);
       this._tripInfoComponent = null;
@@ -233,7 +241,6 @@ export default class TripPresenter {
     }
 
     if (!this._eventsModel.getEvents().length) {
-
       this._renderListEmpty();
       return;
     }
