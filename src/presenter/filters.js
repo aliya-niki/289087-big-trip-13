@@ -49,6 +49,14 @@ export default class FiltersPresenter {
     this._filtersModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
+  disableFilters() {
+    this._filterComponent.disableFilters();
+  }
+
+  enableFilters() {
+    this._filterComponent.disableFilters();
+  }
+
   _getFilters() {
     return [
       {

@@ -4,10 +4,10 @@ import AbstractView from "./abstract.js";
 const MIN_IN_DAY = 1440;
 const MIN_IN_HOUR = 60;
 
-const durationFormat = (durationInMin) => {
-  let days = Math.floor(durationInMin / MIN_IN_DAY);
-  let hours = Math.floor((durationInMin - days * MIN_IN_DAY) / MIN_IN_HOUR);
-  let minutes = durationInMin - days * MIN_IN_DAY - hours * MIN_IN_HOUR;
+const formatDuration = (durationInMin) => {
+  const days = Math.floor(durationInMin / MIN_IN_DAY);
+  const hours = Math.floor((durationInMin - days * MIN_IN_DAY) / MIN_IN_HOUR);
+  const minutes = durationInMin - days * MIN_IN_DAY - hours * MIN_IN_HOUR;
   return `${days ? String(days).padStart(2, `0`) + `D ` : ``} ${hours ? String(hours).padStart(2, `0`) + `H ` : ``} ${String(minutes).padStart(2, `0`) + `M`}`;
 };
 
@@ -39,7 +39,7 @@ const createTripEventTemplate = (event) => {
           &mdash;
           <time class="event__end-time" datetime="${dayjs(finishTime)}">${dayjs(finishTime).format(`HH:mm`)}</time>
         </p>
-        <p class="event__duration">${durationFormat(duration)}</p>
+        <p class="event__duration">${formatDuration(duration)}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>

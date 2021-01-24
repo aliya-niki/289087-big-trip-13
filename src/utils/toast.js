@@ -1,6 +1,6 @@
-const toastContainer = document.createElement(`div`);
-toastContainer.classList.add(`toast-container`);
-document.body.append(toastContainer);
+const toastContainerElement = document.createElement(`div`);
+toastContainerElement.classList.add(`toast-container`);
+document.body.append(toastContainerElement);
 
 export const toast = (message) => {
   if (!Array.from(document.querySelectorAll(`.toast-item`)).find((element) => element.textContent === message)) {
@@ -8,7 +8,7 @@ export const toast = (message) => {
     toastItem.textContent = message;
     toastItem.classList.add(`toast-item`);
 
-    toastContainer.append(toastItem);
+    toastContainerElement.append(toastItem);
 
     window.addEventListener(`online`, () => {
       toastItem.remove();

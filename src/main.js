@@ -1,5 +1,5 @@
 import {render, RenderPosition, remove} from "./utils/render.js";
-import {MenuItem, UpdateType} from "./const.js";
+import {MenuItem, UpdateType, FilterType} from "./const.js";
 import {isOnline} from "./utils/common.js";
 import {toast} from "./utils/toast.js";
 import EventsModel from "./model/events.js";
@@ -16,18 +16,19 @@ import Provider from "./api/provider.js";
 
 const AUTHORIZATION = `Basic fr33d3li78n43bn19fr`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
-const EVENTS_STORE_PREFIX = `bigtrip-localstorage`;
-const OFFERS_STORE_PREFIX = `bigtrip-offers-localstorage`;
-const DESTINATIONS_STORE_PREFIX = `bigtrip-destinations-localstorage`;
+
 const STORE_VER = `v13`;
-const EVENTS_STORE_NAME = `${EVENTS_STORE_PREFIX}-${STORE_VER}`;
-const OFFERS_STORE_NAME = `${OFFERS_STORE_PREFIX}-${STORE_VER}`;
-const DESTINATIONS_STORE_NAME = `${DESTINATIONS_STORE_PREFIX}-${STORE_VER}`;
+
+const StoreName = {
+  EVENTS: `bigtrip-localstorage-${STORE_VER}`,
+  OFFERS: `bigtrip-offers-localstorage-${STORE_VER}`,
+  DESTINATIONS: `bigtrip-destinations-localstorage-${STORE_VER}`
+};
 
 const api = new Api(END_POINT, AUTHORIZATION);
-const eventsStore = new Store(EVENTS_STORE_NAME, window.localStorage);
-const offersStore = new Store(OFFERS_STORE_NAME, window.localStorage);
-const destinationsStore = new Store(DESTINATIONS_STORE_NAME, window.localStorage);
+const eventsStore = new Store(StoreName.EVENTS, window.localStorage);
+const offersStore = new Store(StoreName.OFFERS, window.localStorage);
+const destinationsStore = new Store(StoreName.DESTINATIONS, window.localStorage);
 const apiWithProvider = new Provider(api, eventsStore, offersStore, destinationsStore);
 
 const eventsModel = new EventsModel();
@@ -54,8 +55,8 @@ const newEventClickHandler = (evt) => {
     toast(`You can't create new task offline`);
     return;
   }
-
   tripPresenter.createEvent(handleCreateEventFormClose);
+
   tripMainElement.querySelector(`.trip-main__event-add-btn`).disabled = true;
   if (menuComponent.getElement().querySelector(`.trip-tabs__btn--active`).dataset.value === MenuItem.STATS) {
     tripPresenter.init();
@@ -71,11 +72,14 @@ const handleMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
       tripPresenter.init();
+      filtersPresenter.enableFilters();
+      filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
       remove(statisticsComponent);
       bodyContainerElement.classList.remove(`no-after`);
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
+      filtersPresenter.disableFilters();
       bodyContainerElement.classList.add(`no-after`);
       statisticsComponent = new StatisticsView(eventsModel.getEvents());
       render(tripEventsElement, statisticsComponent, RenderPosition.BEFOREEND);

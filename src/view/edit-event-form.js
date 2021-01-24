@@ -59,7 +59,7 @@ const createDescriptionTemplate = (description, photos) => {
 const createEditEventFormTemplate = (event, allOffers, allDestinations, isNewEvent) => {
   const availableDestinations = [...allDestinations.keys()];
   const {destination, description, photos, type, offers, startTime, finishTime, price, isDisabled, isSaving, isDeleting} = event;
-  const isSubmitBtnDisabled = !destination || !dayjs(finishTime).isAfter(dayjs(startTime).toDate());
+  const isSubmitButtonDisabled = !destination || !dayjs(finishTime).isAfter(dayjs(startTime).toDate());
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -105,7 +105,7 @@ const createEditEventFormTemplate = (event, allOffers, allDestinations, isNewEve
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" ${isDisabled ? `disabled` : ``}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitBtnDisabled || isDisabled ? `disabled` : ``}>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitButtonDisabled || isDisabled ? `disabled` : ``}>
           ${isSaving ? `Saving...` : `Save`}
         </button>
         ${!isNewEvent ? `<button class="event__reset-btn" type="reset">
@@ -264,7 +264,7 @@ export default class EditEventFormView extends SmartView {
 
     this.updateData({
       offers: updatedOffers
-    });
+    }, true);
   }
 
   _priceInputHandler(evt) {

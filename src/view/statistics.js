@@ -122,17 +122,17 @@ export default class StatisticsView extends SmartView {
       this._timeChart = null;
     }
 
-    const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`);
-    const typeCtx = this.getElement().querySelector(`.statistics__chart--transport`);
-    const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
+    const moneyContextElement = this.getElement().querySelector(`.statistics__chart--money`);
+    const typeContextElement = this.getElement().querySelector(`.statistics__chart--transport`);
+    const timeContextElement = this.getElement().querySelector(`.statistics__chart--time`);
 
     const labels = this._existedEventTypes.map((type) => type.toUpperCase());
     const moneyChartData = this._existedEventTypes.map((type) => getMoney(this._data, type));
     const typeChartData = this._existedEventTypes.map((type) => getEventsNumber(this._data, type));
     const timeSpendChartData = this._existedEventTypes.map((type) => getTimeSpend(this._data, type));
 
-    this._moneyChart = new Chart(moneyCtx, chartTemplate(labels, `MONEY`, (val) => `€ ${val}`, moneyChartData));
-    this._typeChart = new Chart(typeCtx, chartTemplate(labels, `TYPE`, (val) => `${val}x`, typeChartData));
-    this._timeChart = new Chart(timeCtx, chartTemplate(labels, `TIME-SPEND`, (val) => `${val}H`, timeSpendChartData));
+    this._moneyChart = new Chart(moneyContextElement, chartTemplate(labels, `MONEY`, (val) => `€ ${val}`, moneyChartData));
+    this._typeChart = new Chart(typeContextElement, chartTemplate(labels, `TYPE`, (val) => `${val}x`, typeChartData));
+    this._timeChart = new Chart(timeContextElement, chartTemplate(labels, `TIME-SPEND`, (val) => `${val}H`, timeSpendChartData));
   }
 }
