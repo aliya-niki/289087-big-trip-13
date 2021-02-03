@@ -8,7 +8,7 @@ const formatDuration = (durationInMin) => {
   const days = Math.floor(durationInMin / MIN_IN_DAY);
   const hours = Math.floor((durationInMin - days * MIN_IN_DAY) / MIN_IN_HOUR);
   const minutes = durationInMin - days * MIN_IN_DAY - hours * MIN_IN_HOUR;
-  return `${days ? String(days).padStart(2, `0`) + `D ` : ``} ${hours ? String(hours).padStart(2, `0`) + `H ` : ``} ${String(minutes).padStart(2, `0`) + `M`}`;
+  return `${days ? String(days).padStart(2, `0`) + `D ` : ``} ${days || hours ? String(hours).padStart(2, `0`) + `H ` : ``} ${String(minutes).padStart(2, `0`) + `M`}`;
 };
 
 const createOfferTemplate = (offers) => {
@@ -74,16 +74,6 @@ export default class TripEventView extends AbstractView {
     return createTripEventTemplate(this._event);
   }
 
-  _editClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.click();
-  }
-
-  _favoriteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
   setEditClickHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
@@ -92,5 +82,15 @@ export default class TripEventView extends AbstractView {
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteClickHandler);
+  }
+
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }

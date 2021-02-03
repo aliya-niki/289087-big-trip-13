@@ -40,7 +40,7 @@ const createPhotoTemplate = (photo) => {
   if (!isOnline()) {
     return ``;
   }
-  return `<img class="event__photo" src="${photo.src}" alt="${photo.description}"></img>`;
+  return `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
 };
 
 const createDescriptionTemplate = (description, photos) => {
@@ -164,6 +164,37 @@ export default class EditEventFormView extends SmartView {
     this._destroyDatepicker(this._finishTimePicker);
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setDatepicker();
+    this.setFormSubmitHandler(this._callback.submit);
+
+    if (!this._isNewEvent) {
+      this.setRollupButtonClickHandler(this._callback.rollupButtonClick);
+    }
+
+    this.setDeleteEventClickHandler(this._callback.deleteEvent);
+  }
+
+  reset(event) {
+    this.updateData(EditEventFormView.parseEventToData(event));
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.submit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  setDeleteEventClickHandler(callback) {
+    this._callback.deleteEvent = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteEventClickHandler);
+  }
+
+  setRollupButtonClickHandler(callback) {
+    this._callback.rollupButtonClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._rollupButtonClickHandler);
+  }
+
   _destroyDatepicker(datepicker) {
     if (datepicker) {
       datepicker.destroy();
@@ -198,18 +229,6 @@ export default class EditEventFormView extends SmartView {
           onChange: this._finishTimeChangeHandler
         }
     );
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this._setDatepicker();
-    this.setFormSubmitHandler(this._callback.submit);
-
-    if (!this._isNewEvent) {
-      this.setRollupButtonClickHandler(this._callback.rollupButtonClick);
-    }
-
-    this.setDeleteEventClickHandler(this._callback.deleteEvent);
   }
 
   _setInnerHandlers() {
@@ -295,18 +314,9 @@ export default class EditEventFormView extends SmartView {
     });
   }
 
-  reset(event) {
-    this.updateData(EditEventFormView.parseEventToData(event));
-  }
-
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.submit(EditEventFormView.parseDataToEvent(this._data));
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.submit = callback;
-    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 
   _deleteEventClickHandler(evt) {
@@ -314,18 +324,8 @@ export default class EditEventFormView extends SmartView {
     this._callback.deleteEvent(EditEventFormView.parseDataToEvent(this._data));
   }
 
-  setDeleteEventClickHandler(callback) {
-    this._callback.deleteEvent = callback;
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteEventClickHandler);
-  }
-
   _rollupButtonClickHandler(event) {
     this._callback.rollupButtonClick(EditEventFormView.parseEventToData(event));
-  }
-
-  setRollupButtonClickHandler(callback) {
-    this._callback.rollupButtonClick = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._rollupButtonClickHandler);
   }
 
   static parseEventToData(event) {

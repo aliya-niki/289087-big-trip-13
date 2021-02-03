@@ -16,7 +16,7 @@ export default class DestinationsModel extends Observer {
 
   static adaptToClient(destinations) {
     const adaptedDestinations = new Map();
-    for (let destination of destinations) {
+    for (const destination of destinations) {
       adaptedDestinations.set(destination.name, {
         description: destination.description,
         photos: destination.pictures

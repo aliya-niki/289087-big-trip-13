@@ -25,16 +25,6 @@ export default class FiltersView extends AbstractView {
     return createFiltersTemplate(this._filters, this._activeFilter);
   }
 
-  _filterTypeChangeHandler(evt) {
-    evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.value);
-  }
-
-  setFilterTypeChangeHandler(callback) {
-    this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener(`change`, this._filterTypeChangeHandler);
-  }
-
   disableFilters() {
     const filters = this.getElement().querySelectorAll(`.trip-filters__filter-input`);
     filters.forEach((filter) => filter.setAttribute(`disabled`, ``));
@@ -43,5 +33,15 @@ export default class FiltersView extends AbstractView {
   enableFilters() {
     const filters = this.getElement().querySelectorAll(`.trip-filters__filter-input`);
     filters.forEach((filter) => filter.removeAttribute(`disabled`));
+  }
+
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement().addEventListener(`change`, this._filterTypeChangeHandler);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.value);
   }
 }

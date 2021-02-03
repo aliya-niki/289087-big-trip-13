@@ -37,24 +37,16 @@ export default class FiltersPresenter {
     remove(prevFilterComponent);
   }
 
-  _handleModelEvent() {
-    this.init();
-  }
-
-  _handleFilterTypeChange(filterType) {
-    if (this._activeFilter === filterType) {
-      return;
-    }
-
-    this._filtersModel.setFilter(UpdateType.MAJOR, filterType);
-  }
-
   disableFilters() {
     this._filterComponent.disableFilters();
   }
 
   enableFilters() {
     this._filterComponent.disableFilters();
+  }
+
+  _handleModelEvent() {
+    this.init();
   }
 
   _getFilters() {
@@ -72,5 +64,13 @@ export default class FiltersPresenter {
         number: applyFilter[FilterType.FUTURE](this._eventsModel.getEvents()).length
       }
     ];
+  }
+
+  _handleFilterTypeChange(filterType) {
+    if (this._activeFilter === filterType) {
+      return;
+    }
+
+    this._filtersModel.setFilter(UpdateType.MAJOR, filterType);
   }
 }

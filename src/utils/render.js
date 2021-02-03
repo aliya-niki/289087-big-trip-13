@@ -5,13 +5,6 @@ export const RenderPosition = {
   BEFOREEND: `beforeend`
 };
 
-export const renderTemplate = (container, template, place) => {
-  if (container instanceof AbstractView) {
-    container = container.getElement();
-  }
-  container.insertAdjacentHTML(place, template);
-};
-
 export const render = (container, child, place) => {
   if (container instanceof AbstractView) {
     container = container.getElement();

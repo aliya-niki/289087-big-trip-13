@@ -17,7 +17,7 @@ export default class OffersModel extends Observer {
   static adaptToClient(offers) {
     const adaptedOffers = new Map();
 
-    for (let offer of offers) {
+    for (const offer of offers) {
       adaptedOffers.set(offer.type, offer.offers);
     }
 

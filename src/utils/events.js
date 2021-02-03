@@ -10,16 +10,6 @@ export const BLANK_EVENT = {
   isFavorite: false
 };
 
-export const DESTINATIONS = [
-  `Amsterdam`,
-  `Chamonix`,
-  `Geneva`,
-  `Paris`,
-  `Zurich`,
-  `London`,
-  `Stuttgart`
-];
-
 export const EVENT_TYPES = [
   `Taxi`,
   `Bus`,
