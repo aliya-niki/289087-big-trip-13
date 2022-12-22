@@ -1,6 +1,6 @@
 # Проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
-* Студент: [Aliya Nikiforova](https://up.htmlacademy.ru/ecmascript/13/user/289087).
+* Студент: [Aliya](https://up.htmlacademy.ru/ecmascript/13/user/289087).
 * Наставник: [Альбина Токарчук](https://htmlacademy.ru/profile/id167491).
 
 ---
